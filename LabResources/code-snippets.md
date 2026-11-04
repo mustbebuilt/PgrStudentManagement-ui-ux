@@ -1,6 +1,6 @@
 # Lab Companion: Step-by-Step Code Snippets & Heavy Hints
 
-This companion file contains ready-to-adapt code snippets for every part of [`lab-instructions.md`](./lab-instructions.md). Each section matches the corresponding **Part** in the lab instructions and tells you **which file to edit** and **what to replace**.
+This companion file contains ready-to-adapt code snippets for every part of [`lab1-instructions.md`](./lab1-instructions.md) (and supports the improvements you will test in [`lab2-instructions.md`](./lab2-instructions.md)). Each section matches the corresponding **Part** in the Lab 1 instructions and tells you **which file to edit** and **what to replace**.
 
 ---
 

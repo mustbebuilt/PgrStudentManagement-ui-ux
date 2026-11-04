@@ -133,9 +133,10 @@ dotnet test
 
 ## Lab Resources: UI / UX and Accessibility
 
-This project includes a dedicated hands-on lab focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC:
+This project includes a two-part hands-on lab sequence focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC, followed by Pre vs. Post usability and accessibility evaluation:
 
-- **Lab Instructions**: [`LabResources/lab-instructions.md`](./LabResources/lab-instructions.md)
+- **Lab 1 — UI/UX & Accessibility Implementation**: [`LabResources/lab1-instructions.md`](./LabResources/lab1-instructions.md)
+  - **Repository Setup**: Forking and cloning two copies of the starter repository (`PgrStudentManagement-ui-ux-pre` for baseline testing and `PgrStudentManagement-ui-ux-post` for implementing improvements).
   - **Part 0**: Usability and accessibility audit of the starter forms.
   - **Part 1**: Decoupling forms from entities using View Models.
   - **Part 2**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
@@ -144,9 +145,15 @@ This project includes a dedicated hands-on lab focused on improving form usabili
   - **Part 6**: Progressive enhancement with unobtrusive client-side validation.
   - **Part 7**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
   - **Part 8**: Progressive disclosure and error prevention on status decision forms.
-  - **Part 10**: Comprehensive WCAG 2.2 testing checklist (keyboard navigation, screen readers, contrast, zoom).
-- **Code Snippets & Architecture Guide**: [`LabResources/code-snippets.md`](./LabResources/code-snippets.md)
-  - Concrete C# implementations for `PhdApplicationsController`, `PhdApplication` drafts, `PhdApplicationService` transition checks, and `StudentManagementDbContext` fluent configuration.
+- **Lab 2 — Pre vs. Post Usability & Accessibility Testing**: [`LabResources/lab2-instructions.md`](./LabResources/lab2-instructions.md)
+  - Running the untouched **Pre** (`:5277`) and improved **Post** (`:5278`) copies side-by-side.
+  - **Part 1**: 5-minute Peer Guerrilla Usability Testing with structured task metrics.
+  - **Part 2**: Chrome DevTools Accessibility Tree inspection, Lighthouse audits, vision deficiency emulation, and 400% zoom reflow.
+  - **Part 3**: Visual keyboard and tab-stop path auditing with **Microsoft Accessibility Insights for Web**.
+  - **Part 4**: Automated usability and WCAG 2.2 AA testing with **Playwright** and **axe-core** (`@playwright/test` + `@axe-core/playwright` and .NET xUnit `Microsoft.Playwright` + `Deque.AxeCore.Playwright`).
+  - **Part 5**: Pre vs. Post scorecard and reflection questions.
+- **Code Snippets & Heavy Hints Companion**: [`LabResources/code-snippets.md`](./LabResources/code-snippets.md)
+  - Concrete C# and Razor implementations for `PhdApplicationsController`, `PhdApplication` drafts, `PhdApplicationService` transition checks, and `StudentManagementDbContext` fluent configuration.
 
 ---
 

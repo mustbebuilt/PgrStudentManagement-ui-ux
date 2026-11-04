@@ -1,20 +1,41 @@
-# Lab: Improving the UI/UX and Accessibility of the PhD Applications Forms
+# Lab 1: Improving the UI/UX and Accessibility of the PhD Applications Forms
 
 ## Overview
 
-The **PhD Applications** module (`PgrStudentManagement.Web/Modules/PhdApplications`) works, but its forms have been **deliberately left in a poor state**: every field is a plain `<input type="text">` and there is no validation of data.
+The **PhD Applications** module (`PgrStudentManagement.Web/Modules/PhdApplications`) works, but its forms have been **deliberately left in a poor state**: every field is a plain `<input type="text">` and all form validation has been removed.
 
-In this lab you will transform the PhD Applications forms so they are **easy to use, accessible (WCAG 2.2), and robust**.
+In **Lab 1**, you will redesign the PhD Applications forms so they are **easy to use, accessible (WCAG 2.2), and robust**.
+In **Lab 2** ([`lab2-instructions.md`](./lab2-instructions.md)), you will run side-by-side **Pre vs. Post usability and automated accessibility tests** (using Playwright, Axe, Accessibility Insights, and Chrome DevTools) to measure the impact of your changes.
+
+---
+
+## Before You Start: Create Two Copies ("Pre" and "Post")
+
+Because **Lab 2** compares the **original ("Pre")** application against your **improved ("Post")** application, you should keep an untouched copy of the original repository alongside the copy you modify in this lab:
+
+1. Fork the original repository on GitHub:
+   <https://github.com/mustbebuilt/PgrStudentManagement-ui-ux>
+   *(If you want two separate repositories in your GitHub account, you can also use **+** → **Import repository** on GitHub and import `https://github.com/mustbebuilt/PgrStudentManagement-ui-ux` a second time as `PgrStudentManagement-ui-ux-pre`.)*
+2. Clone **two separate folders** on your machine—one for your untouched **"Pre"** baseline, and one for your **"Post"** lab work:
+   ```bash
+   # 1. Untouched baseline copy (keep this unmodified for Lab 2 "Pre" testing)
+   git clone https://github.com/<your-username>/PgrStudentManagement-ui-ux.git PgrStudentManagement-ui-ux-pre
+
+   # 2. Working copy (make all of your Lab 1 improvements in this folder)
+   git clone https://github.com/<your-username>/PgrStudentManagement-ui-ux.git PgrStudentManagement-ui-ux-post
+   cd PgrStudentManagement-ui-ux-post
+   ```
 
 > [!IMPORTANT]
-> **How to use this lab guide:**
+> **How to use this Lab 1 guide:**
+> - Work inside your `PgrStudentManagement-ui-ux-post` folder and leave `PgrStudentManagement-ui-ux-pre` untouched for [Lab 2](./lab2-instructions.md).
 > - Every file you need to edit already has **`TODO (Lab Part X)` comments** marking the exact spots to change.
 > - Helper methods (`GetEligibleMainSupervisorsAsync`, `GenerateNextApplicationReferenceAsync`, and `GetAllowedTransitions`) are **already built for you** inside [`PhdApplicationService.cs`](../PgrStudentManagement.Web/Modules/PhdApplications/Services/PhdApplicationService.cs).
 > - Companion file [**`code-snippets.md`**](./code-snippets.md) contains **complete, copy-and-adapt code snippets** for every step below.
 
 ### Learning outcomes
 
-By the end of this lab you should be able to:
+By the end of Lab 1 you should be able to:
 
 1. Separate form models (ViewModels) from database entities to prevent over-posting and auto-generate system fields.
 2. Replace plain text boxes with semantic HTML controls (`email`, `date`, `<select>`, `<textarea>`, radio `<fieldset>`s).
@@ -22,7 +43,6 @@ By the end of this lab you should be able to:
 4. Add server-side validation and display errors accessibly (focusable error summary + inline field errors with `aria-invalid="true"`).
 5. Add progressive client-side validation without breaking no-JavaScript support.
 6. Split a long form into logical sections with a **Save as draft and return later** feature.
-7. Test forms using the keyboard, VoiceOver, and Lighthouse/axe against WCAG 2.2 criteria.
 
 ### Files you will work with
 
@@ -58,8 +78,6 @@ Before changing any code, try using `/PhdApplications/Create` and `/PhdApplicati
 | 8 | `Create (POST)` binds directly to the EF Core `PhdApplication` entity (**over-posting** vulnerability) | `PhdApplicationsController.cs` |
 | 9 | `[HttpPost]` actions are missing `[ValidateAntiForgeryToken]` | `PhdApplicationsController.cs` |
 | 10 | `EditStatus` lets users type any status string, including disallowed transitions | `EditStatus.cshtml` |
-
-> **Task 0.1:** Run a quick baseline **Lighthouse → Accessibility** audit in Chrome DevTools on `/PhdApplications/Create` and note the score. Next, try submitting `Create` with an invalid date (`next October`) or invalid funding source (`Self funded`) and observe what happens.
 
 ---
 
@@ -179,8 +197,6 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
    - Ensure every field has `<span asp-validation-for="..." class="text-danger"></span>`.
    - For an extra accessibility boost, see [**Snippet 5.B**](./code-snippets.md#snippet-5b-inline-error-message-with-aria-invalid-and-aria-describedby) to see how `aria-invalid="true"` and `aria-describedby` connect the error message to the input.
 
-> **Task 5.1:** Submit the empty form using only the keyboard (<kbd>Tab</kbd> and <kbd>Enter</kbd>). Verify that focus lands on the "There is a problem" summary box and that clicking an error link jumps focus to the corresponding input.
-
 ---
 
 ## Part 6 – Client-Side Validation (Progressive Enhancement)
@@ -197,8 +213,6 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
    }
    ```
    *(If you already added `@section Scripts` in Part 3 for the character counter, place `<partial name="_ValidationScriptsPartial" />` at the top of that section—see [**Snippet 3.B**](./code-snippets.md#snippet-3b-accessible-live-character-counter-aria-livepolite).)*
-
-> **Task 6.1:** Test with JavaScript enabled, then disable JavaScript in Chrome DevTools (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → "Disable JavaScript") and submit again to confirm your server-side error summary still catches every error.
 
 ---
 
@@ -255,22 +269,7 @@ If you finish early, open `Views/PhdApplications/Index.cshtml` and apply [**Snip
 
 ---
 
-## Part 10 – Test and Evaluate (WCAG 2.2 Checklist)
+## Next Step: Proceed to Lab 2 (Pre vs. Post Testing)
 
-Test your updated pages using the checklist below and compare your new Lighthouse / axe score with Task 0.1.
+Once your improvements in `PgrStudentManagement-ui-ux-post` are complete, move on to [**`lab2-instructions.md`**](./lab2-instructions.md) to test and compare your **Pre** and **Post** versions using Playwright, Accessibility Insights, and Chrome DevTools!
 
-| Check | How to verify | WCAG 2.2 |
-| :--- | :--- | :--- |
-| **Labels & programmatic association** | Click each label—the input or radio button must receive focus | 1.3.1, 3.3.2, 4.1.2 |
-| **Input purpose (`autocomplete`)** | Check `FirstName`, `LastName`, and `EmailAddress` autofill in browser | 1.3.5 |
-| **Keyboard-only navigation** | Unplug/ignore the mouse: use <kbd>Tab</kbd>, <kbd>Shift</kbd>+<kbd>Tab</kbd>, arrow keys (radios), <kbd>Space</kbd>, and <kbd>Enter</kbd> | 2.1.1, 2.4.7 |
-| **Accessible error summary & inline errors** | Submit an empty form; verify focus moves to the summary and links jump to each input | 3.3.1, 3.3.3 |
-| **Live status announcements** | Type in `ResearchSummary` and check the character count updates smoothly | 4.1.3 |
-| **400% zoom reflow** | Zoom browser to 400% at 1280px width—no horizontal scrollbar or overlapping text | 1.4.10 |
-| **No-JavaScript resilience** | Disable JavaScript in DevTools—all sections, draft saving, and server validation still work | Progressive enhancement |
-
-### Quick Reflection Questions
-
-1. Why did we use radio buttons inside a `<fieldset>` for `ModeOfStudy` and `FundingSource`, but a `<select>` dropdown for `ProposedSupervisorStaffNumber`?
-2. Why is server-side validation still mandatory even after adding `_ValidationScriptsPartial`?
-3. How did `aria-describedby` and `tabindex="-1"` on the error summary change the experience for keyboard and screen-reader users?
