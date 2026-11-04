@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using PgrStudentManagement.Tests.Fixtures;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Data;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Data.Daos;
+using PgrStudentManagement.Web.Modules.AcademicSupervisors.Services;
+using PgrStudentManagement.Web.Modules.PhdApplications.Data;
+using PgrStudentManagement.Web.Modules.PhdApplications.Data.Daos;
 using PgrStudentManagement.Web.Modules.Students.Data;
 using PgrStudentManagement.Web.Modules.Students.Data.Daos;
 using PgrStudentManagement.Web.Modules.Students.Services;
@@ -35,6 +38,42 @@ public sealed class ApplicationSeedOrderTests
         Assert.NotEmpty(
             await database.Context
                 .SupervisoryAssignments
+                .ToListAsync());
+    }
+
+    [Fact]
+    public async Task SupervisorsAndStudentsMustExistBeforePhdApplicationsAreSeeded()
+    {
+        await using var database = await SqliteTestDatabase.CreateAsync();
+
+        var studentDao = new StudentDao(database.Context);
+        var enrolmentDao = new EnrolmentDao(database.Context);
+        var studentService = new StudentService(studentDao, enrolmentDao);
+
+        var supervisorDao = new AcademicSupervisorDao(database.Context);
+        var supervisorService =
+            new AcademicSupervisorService(supervisorDao, studentService);
+
+        var phdApplicationSeeder =
+            new PhdApplicationDataSeeder(
+                new PhdApplicationDao(database.Context),
+                supervisorService,
+                studentService);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => phdApplicationSeeder.SeedAsync());
+
+        await new StudentDataSeeder(studentDao).SeedAsync();
+
+        await new AcademicSupervisorDataSeeder(
+            supervisorDao,
+            studentService).SeedAsync();
+
+        await phdApplicationSeeder.SeedAsync();
+
+        Assert.NotEmpty(
+            await database.Context
+                .PhdApplications
                 .ToListAsync());
     }
 }

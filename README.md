@@ -1,113 +1,95 @@
 # Postgraduate Research (PGR) Student Management System
 
-A modular ASP.NET Core web application for managing Postgraduate Research (PGR) students, supervisory teams, and research activities.
+A modular ASP.NET Core web application demonstrating a **modular monolith** architecture for managing Postgraduate Research (PGR) students, academic supervisory teams, PhD admissions, and student research activities.
 
 ---
 
 ## Architecture Overview
 
-The application is structured as a **modular monolith** with three primary functional modules:
+The application is structured as a **modular monolith** divided into four distinct domain modules, each containing its own controllers, models, data access layer (DAOs/repositories), seeders, and services. Modules communicate across boundaries using lightweight **contracts (interfaces)** rather than referencing each other's data layer directly:
 
-1. **Students Module** ([PgrStudentManagement.Web/Modules/Students](PgrStudentManagement.Web/Modules/Students))
-   - Handles student records, enrolments, mode of study, and progression milestones.
-   - Persisted via Entity Framework Core with **SQLite** (`student-management.db`).
-   - Exposes public module contract `IStudentLookup` for cross-module integration.
+```
+PgrStudentManagement.Web/Modules/
+├── Students/               # Student records, enrolments, progression
+│   └── Contracts/          # IStudentLookup (consumed by Supervisors & Applications)
+├── AcademicSupervisors/    # Staff, role eligibility, supervisory teams
+│   └── Contracts/          # ISupervisorLookup (consumed by Applications)
+├── PhdApplications/        # Prospective PhD proposals, review, admissions lifecycle
+└── ResearchActivities/     # Conferences, publications, research documents
+```
 
-2. **Academic Supervisors Module** ([PgrStudentManagement.Web/Modules/AcademicSupervisors](PgrStudentManagement.Web/Modules/AcademicSupervisors))
-   - Manages supervisor records, role eligibility, and supervisory team assignments (Main, Co-Supervisor, Advisor).
-   - Enforces supervisory team constraints (e.g., eligible roles, maximum supervisor thresholds, employment type rules).
-   - Persisted via EF Core with **SQLite**.
+### 1. Students Module ([`Modules/Students`](./PgrStudentManagement.Web/Modules/Students))
+- Handles student records, programme enrolments, mode of study, and progression milestones (thesis titles, expected dates, submissions).
+- **Persistence**: Relational SQLite database (`student-management.db`) via Entity Framework Core (`Students` and `Enrolments` tables).
+- **Public Contract**: Exposes `IStudentLookup` (returning `StudentSummary`), allowing other modules to verify student existence and full names without coupling to the `Students` persistence schema.
 
-3. **Research Activities Module** ([PgrStudentManagement.Web/Modules/ResearchActivities](PgrStudentManagement.Web/Modules/ResearchActivities))
-   - Tracks research activities, conferences, papers, and milestones.
-   - Persisted as document collections in **MongoDB** (`StudentManagement.ResearchActivities`).
+### 2. Academic Supervisors Module ([`Modules/AcademicSupervisors`](./PgrStudentManagement.Web/Modules/AcademicSupervisors))
+- Manages supervisor records, role eligibility (Director of Studies, First Supervisor, Second Supervisor, Adviser), and supervisory team assignments.
+- Enforces institutional rules (e.g. Director of Studies must be institution-employed, maximum supervisor thresholds, single DoS/First Supervisor per student).
+- **Persistence**: Relational SQLite database via EF Core (`AcademicSupervisors`, `AcademicSupervisorEligibleRoles`, `SupervisoryAssignments`).
+- **Public Contract**: Exposes `ISupervisorLookup` (returning `SupervisorSummary`), allowing other modules to look up supervisor names and check Main Supervisor eligibility.
+
+### 3. PhD Applications Module ([`Modules/PhdApplications`](./PgrStudentManagement.Web/Modules/PhdApplications))
+- **Purpose**: Manages the admissions intake and proposal evaluation pipeline for prospective PhD candidates before they become enrolled students.
+- **Domain Model (`PhdApplication`)**:
+  - **Identity**: Natural primary key `ApplicationReference` (e.g. `APP-2026-001`).
+  - **Applicant Details**: First name, last name, email address.
+  - **Proposed Study**: Programme code (e.g. `PHD-COMP`, `PHD-DESIGN`), mode of study (`Full-time` / `Part-time`), proposed cohort start date.
+  - **Research Proposal**: Working thesis title and research abstract/summary.
+  - **Funding**: Enumerated `FundingType` (`SelfFunded`, `Studentship`, `ResearchCouncil`, `ExternalSponsor`).
+  - **Proposed Supervision**: Optional `ProposedSupervisorStaffNumber` foreign key referencing `AcademicSupervisors.StaffNumber`.
+  - **Admissions Lifecycle**: `ApplicationStatus` (`Submitted`, `UnderReview`, `InterviewScheduled`, `OfferMade`, `OfferAccepted`, `Rejected`, `Withdrawn`, `Enrolled`).
+  - **Decisions & Enrollment**: Submission date, decision timestamp, and optional `EnrolledStudentNumber` foreign key referencing `Students.StudentNumber` once an offer is accepted and the applicant matriculates.
+- **Cross-Module Integration**:
+  - Uses `ISupervisorLookup` to verify that any proposed supervisor exists and is eligible to act as a Main Supervisor (`DirectorOfStudies` or `FirstSupervisor`).
+  - Uses `IStudentLookup` to validate matriculated student records when an application transitions to `Enrolled`.
+- **Persistence**: Relational SQLite database via EF Core (`PhdApplications` table).
+- **UI / UX & Accessibility Starting Point**: The module's starter views ([`Create.cshtml`](./PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml) and [`EditStatus.cshtml`](./PgrStudentManagement.Web/Views/PhdApplications/EditStatus.cshtml)) are intentionally stripped of form validation and defaulted to plain text inputs, providing a real-world scenario for students to practice modern UI/UX, input types, and accessible form design (see [Lab Resources](#lab-resources-ui--ux-and-accessibility)).
+
+### 4. Research Activities Module ([`Modules/ResearchActivities`](./PgrStudentManagement.Web/Modules/ResearchActivities))
+- Tracks student research activities, conference presentations, published papers, and research milestones.
+- **Persistence**: Document store in **MongoDB** (`StudentManagement.ResearchActivities` collection), demonstrating polyglot persistence alongside SQLite.
 
 ---
 
-## Database Setup & Configuration
+## Database Architecture & Polyglot Persistence
 
-The application uses a polyglot persistence approach: **SQLite** for relational domain models and **MongoDB** for unstructured research activity documents.
+The application employs a polyglot persistence strategy suited to differing data models: **SQLite** for relational domain models with foreign keys, and **MongoDB** for flexible research activity documents.
 
 ### 1. SQLite Relational Database (`student-management.db`)
-
-- **Purpose**: Stores Students, Enrolments, Academic Supervisors, Eligible Roles, and Supervisory Assignments.
-- **Connection String**: Configured in `PgrStudentManagement.Web/appsettings.json`:
-  ```json
-  "ConnectionStrings": {
-    "StudentManagementDatabase": "Data Source=student-management.db"
-  }
-  ```
-- **Setup & Installation**:
-  - **Zero installation required**: SQLite is an embedded file-based database and does not require a background service or daemon.
-  - **Automatic Migrations & Seeding**: On application startup, `Program.cs` automatically invokes `await context.Database.MigrateAsync()`. This creates `student-management.db` if it does not exist and applies all EF Core migrations, followed by executing the data seeders.
-- **Manual Migrations (Optional)**:
-  If you modify domain entities and want to run migrations manually via the .NET EF Core CLI tools:
+- **Location**: Local file `PgrStudentManagement.Web/student-management.db` (configured in `appsettings.json`).
+- **Tables**:
+  - `Students`: Core student demographic and research milestone records.
+  - `Enrolments`: Programme history and enrolment statuses (`Active`, `Suspended`, `Completed`).
+  - `AcademicSupervisors`: Staff records and employment types (`InstitutionEmployed`, `External`).
+  - `AcademicSupervisorEligibleRoles`: Many-to-many relationship mapping supervisors to permissible supervisory roles.
+  - `SupervisoryAssignments`: Student-supervisor team pairings with start/end dates and role types.
+  - `PhdApplications`: Candidate applications, proposals, proposed supervisors, and status history.
+- **Zero Configuration**: SQLite requires no installation or running services.
+- **Automatic Migration & Seeding**: When the application boots, `Program.cs` automatically invokes `context.Database.MigrateAsync()`, ensuring all schema tables are created and seeded if they do not yet exist.
+- **Manual Migrations** (optional):
   ```bash
+  dotnet ef migrations add <MigrationName> --project PgrStudentManagement.Web
   dotnet ef database update --project PgrStudentManagement.Web
   ```
-- **Resetting SQLite Data**:
-  To reset the database to a fresh state, stop the web application and delete the `student-management.db` file (located in `PgrStudentManagement.Web/` or the working directory where the process was started). It will be recreated and re-seeded on the next launch.
-- **Viewing the Data**:
-  You can inspect the database using the VS Code *SQLite Viewer* extension, *DB Browser for SQLite*, or the `sqlite3` CLI.
-
----
 
 ### 2. MongoDB Document Database (`StudentManagement`)
-
-- **Purpose**: Stores student research activity documents.
-- **Connection Settings**: Configured in `PgrStudentManagement.Web/appsettings.json`:
-  ```json
-  "ResearchActivityDatabase": {
-    "ConnectionString": "mongodb://localhost:27017",
-    "DatabaseName": "StudentManagement",
-    "CollectionName": "ResearchActivities"
-  }
-  ```
-- **Setup & Installation**:
-  MongoDB is an external service and must be running on `localhost:27017` before launching the application. If MongoDB is not reachable, startup will fail with a `System.TimeoutException` / `MongoConnectionException`.
-
-  Choose one of the following setup options:
-
-  #### Option A: Docker (Recommended)
-  Run a local MongoDB container in the background:
-  ```bash
-  docker run -d --name mongodb -p 27017:27017 mongo:latest
-  ```
-  To restart the container on subsequent sessions:
-  ```bash
-  docker start mongodb
-  ```
-
-  #### Option B: macOS (Homebrew)
-  Install and run MongoDB Community Edition as a background service:
-  ```bash
-  brew tap mongodb/brew
-  brew install mongodb-community
-  brew services start mongodb-community
-  ```
-  *(To check service status: `brew services list`)*
-
-  #### Option C: MongoDB Atlas (Cloud) or Custom Host
-  If using an external host or MongoDB Atlas:
-  1. Obtain your connection URI (e.g. `mongodb+srv://<username>:<password>@cluster.mongodb.net/`).
-  2. Update `ResearchActivityDatabase:ConnectionString` in `PgrStudentManagement.Web/appsettings.json` or override it via an environment variable:
-     ```bash
-     export ResearchActivityDatabase__ConnectionString="mongodb://<host>:27017"
-     ```
-
-- **Automatic Initialization**:
-  You do not need to manually create the database or collection. When the web application starts, `ResearchActivityDataSeeder.SeedAsync` checks if the `ResearchActivities` collection is empty and automatically seeds sample documents.
-- **Viewing the Data**:
-  You can inspect the documents using *MongoDB Compass* or the `mongosh` CLI:
-  ```bash
-  mongosh
-  use StudentManagement
-  db.ResearchActivities.find().pretty()
-  ```
+- **Connection**: `mongodb://localhost:27017` (configured in `appsettings.json`).
+- **Collection**: `StudentManagement.ResearchActivities`.
+- **Setup Options**:
+  - **Docker (Recommended)**:
+    ```bash
+    docker run -d --name mongodb -p 27017:27017 mongo:latest
+    ```
+  - **macOS (Homebrew)**:
+    ```bash
+    brew services start mongodb-community
+    ```
+- **Automatic Initialization**: On startup, `ResearchActivityDataSeeder.SeedAsync` checks if the collection is empty and populates sample documents.
 
 ---
 
-## How the Application Runs
+## How to Run the Application
 
 ### 1. Build the Solution
 From the repository root:
@@ -115,86 +97,69 @@ From the repository root:
 dotnet build
 ```
 
-### 2. Run the Web Application
-Ensure your MongoDB instance is running, then run the web project:
-
+### 2. Run the Web Project
+Ensure your local MongoDB instance is running, then launch the web application:
 ```bash
-# Option A: Run from the repository root specifying the project
 dotnet run --project PgrStudentManagement.Web
-
-# Option B: Navigate into the project folder
-cd PgrStudentManagement.Web
-dotnet run
-
-# Option C: Run with hot reload for development
+```
+Or with hot reload:
+```bash
 dotnet watch --project PgrStudentManagement.Web
 ```
 
+By default, the application listens on:
+- HTTP: `http://localhost:5277`
+- HTTPS: `https://localhost:7178`
+
 ### 3. Application Startup Sequence
 When [PgrStudentManagement.Web/Program.cs](PgrStudentManagement.Web/Program.cs) executes:
-1. **Service Registration**: Configures EF Core (SQLite), MongoDB client, module DAOs, repositories, and business services.
-2. **Database Migration**: Automatically runs `context.Database.MigrateAsync()` to apply any pending EF Core SQLite migrations.
-3. **Data Seeding**: Automatically seeds initial data in order:
+1. **Service Registration**: Registers MVC controllers, EF Core SQLite `DbContext`, MongoDB client, DAOs, repositories, and cross-module services (`IStudentLookup`, `ISupervisorLookup`).
+2. **Database Migration**: Automatically applies pending EF Core migrations (`await context.Database.MigrateAsync()`).
+3. **Ordered Data Seeding**:
    - `StudentDataSeeder` (Students)
-   - `EnrolmentDataSeeder` (Enrolments referencing students)
-   - `AcademicSupervisorDataSeeder` (Supervisors, eligible roles, assignments)
-   - `ResearchActivityDataSeeder` (Research activities in MongoDB)
-4. **Endpoint Routing**: Starts the web server listening by default on:
-   - HTTP: `http://localhost:5277`
-   - HTTPS: `https://localhost:7178`
+   - `EnrolmentDataSeeder` (Enrolments referencing `StudentNumber`)
+   - `AcademicSupervisorDataSeeder` (Supervisors and supervisory assignments)
+   - `PhdApplicationDataSeeder` (PhD applications referencing supervisors and students)
+   - `ResearchActivityDataSeeder` (MongoDB activity documents)
+4. **Endpoint Routing**: Maps controllers and static asset endpoints.
 
 ### 4. Running the Tests
-To execute the automated unit and integration tests:
+To run unit and integration tests across all modules:
 ```bash
 dotnet test
 ```
 
 ---
 
-## Important Note: The `await` Fix in `AcademicSupervisorsController`
+## Lab Resources: UI / UX and Accessibility
 
-### Problem
-When accessing the Academic Supervisors list (`/AcademicSupervisors`), the application previously threw the following runtime exception:
+This project includes a dedicated hands-on lab focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC:
 
-```text
-System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 
-'System.Threading.Tasks.Task`1[System.Collections.Generic.IReadOnlyList`1[PgrStudentManagement.Web.Modules.AcademicSupervisors.Models.AcademicSupervisor]]', 
-but this ViewDataDictionary instance requires a model item of type 
-'System.Collections.Generic.IReadOnlyList`1[PgrStudentManagement.Web.Modules.AcademicSupervisors.Models.AcademicSupervisor]'.
-```
+- **Lab Instructions**: [`LabResources/lab-instructions.md`](./LabResources/lab-instructions.md)
+  - **Part 0**: Usability and accessibility audit of the starter forms.
+  - **Part 1**: Decoupling forms from entities using View Models.
+  - **Part 2**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
+  - **Part 3**: Accessible labels, hint text, grouping (`<fieldset>`/`<legend>`), and character counts.
+  - **Part 4 & 5**: Accessible server-side error validation (error summary, inline messages, focus management).
+  - **Part 6**: Progressive enhancement with unobtrusive client-side validation.
+  - **Part 7**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
+  - **Part 8**: Progressive disclosure and error prevention on status decision forms.
+  - **Part 10**: Comprehensive WCAG 2.2 testing checklist (keyboard navigation, screen readers, contrast, zoom).
+- **Code Snippets & Architecture Guide**: [`LabResources/code-snippets.md`](./LabResources/code-snippets.md)
+  - Concrete C# implementations for `PhdApplicationsController`, `PhdApplication` drafts, `PhdApplicationService` transition checks, and `StudentManagementDbContext` fluent configuration.
 
-### Cause
-In [AcademicSupervisorsController.cs](PgrStudentManagement.Web/Modules/AcademicSupervisors/Controllers/AcademicSupervisorsController.cs), the `Index` action called the asynchronous service method `GetAcademicSupervisorsAsync` without awaiting it:
+---
 
+## Technical Notes
+
+### Asynchronous Pattern in Controllers
+When returning view models from asynchronous services in MVC controllers, always `await` the asynchronous task:
 ```csharp
-// Previous buggy code:
-public async Task<IActionResult> Index(
-    CancellationToken cancellationToken = default)
+// Correct:
+public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
 {
-    var supervisors =
-        _academicSupervisorService
-            .GetAcademicSupervisorsAsync(cancellationToken); // <-- Missing await!
-
-    return View(supervisors); // Passed Task<IReadOnlyList<AcademicSupervisor>> to View
-}
-```
-
-Because `await` was omitted, `supervisors` was an uncompleted `Task<...>` object rather than the supervisor list. When passed into `View(supervisors)`, Razor's model activation failed because [Views/AcademicSupervisors/Index.cshtml](PgrStudentManagement.Web/Views/AcademicSupervisors/Index.cshtml) declared `@model IReadOnlyList<AcademicSupervisor>`.
-
-### Resolution
-The call in [AcademicSupervisorsController.cs](PgrStudentManagement.Web/Modules/AcademicSupervisors/Controllers/AcademicSupervisorsController.cs) was corrected to `await` the asynchronous task:
-
-```csharp
-// Fixed code:
-public async Task<IActionResult> Index(
-    CancellationToken cancellationToken = default)
-{
-    var supervisors =
-        await _academicSupervisorService
-            .GetAcademicSupervisorsAsync(cancellationToken);
-
+    var supervisors = await _academicSupervisorService.GetAcademicSupervisorsAsync(cancellationToken);
     return View(supervisors);
 }
 ```
-
-This ensures the task resolves to `IReadOnlyList<AcademicSupervisor>` before invoking the view, preventing the `InvalidOperationException`.
+Omitting `await` passes an unresolved `Task<...>` rather than the underlying model into Razor's `ViewDataDictionary`, which causes a runtime `System.InvalidOperationException`.

@@ -1,3 +1,4 @@
+using PgrStudentManagement.Web.Modules.AcademicSupervisors.Contracts;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Models;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Data.Daos;
 
@@ -5,7 +6,7 @@ using PgrStudentManagement.Web.Modules.Students.Contracts;
 
 namespace PgrStudentManagement.Web.Modules.AcademicSupervisors.Services;
 
-public class AcademicSupervisorService
+public class AcademicSupervisorService : ISupervisorLookup
 {
     private readonly AcademicSupervisorDao _academicSupervisorDao;
     private readonly IStudentLookup _studentLookup;
@@ -295,6 +296,47 @@ public class AcademicSupervisorService
             StartDate = assignment.StartDate,
             EndDate = assignment.EndDate
         };
+    }
+
+    // Implementation of the ISupervisorLookup contract.
+    public async Task<SupervisorSummary?> GetSupervisorSummaryAsync(
+        string staffNumber,
+        CancellationToken cancellationToken = default)
+    {
+        var supervisor = await _academicSupervisorDao
+            .GetAcademicSupervisorAsync(staffNumber, cancellationToken);
+
+        if (supervisor is null)
+        {
+            return null;
+        }
+
+        return MapToSummary(supervisor);
+    }
+
+    public async Task<IReadOnlyList<SupervisorSummary>>
+        GetSupervisorSummariesAsync(
+            CancellationToken cancellationToken = default)
+    {
+        var supervisors = await GetAcademicSupervisorsAsync(cancellationToken);
+
+        return supervisors
+            .Select(MapToSummary)
+            .ToList();
+    }
+
+    private static SupervisorSummary MapToSummary(
+        AcademicSupervisor supervisor)
+    {
+        var isEligibleMain =
+            supervisor.EmploymentType == SupervisorEmploymentType.InstitutionEmployed
+            && (supervisor.IsEligibleFor(SupervisoryRole.DirectorOfStudies)
+                || supervisor.IsEligibleFor(SupervisoryRole.FirstSupervisor));
+
+        return new SupervisorSummary(
+            supervisor.StaffNumber,
+            supervisor.FullName,
+            isEligibleMain);
     }
 
 }

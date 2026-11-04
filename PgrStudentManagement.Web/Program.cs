@@ -6,9 +6,14 @@ using PgrStudentManagement.Web.Modules.Students.Data;
 using PgrStudentManagement.Web.Modules.Students.Data.Daos;
 using PgrStudentManagement.Web.Modules.Students.Services;
 
+using PgrStudentManagement.Web.Modules.AcademicSupervisors.Contracts;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Data;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Data.Daos;
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Services;
+
+using PgrStudentManagement.Web.Modules.PhdApplications.Data;
+using PgrStudentManagement.Web.Modules.PhdApplications.Data.Daos;
+using PgrStudentManagement.Web.Modules.PhdApplications.Services;
 
 using PgrStudentManagement.Web.Modules.ResearchActivities.Data;
 using PgrStudentManagement.Web.Modules.ResearchActivities.Services;
@@ -52,7 +57,15 @@ builder.Services.AddScoped<ResearchActivityService>();
 // Academic Supervisors module.
 builder.Services.AddScoped<AcademicSupervisorDao>();
 builder.Services.AddScoped<AcademicSupervisorService>();
+builder.Services.AddScoped<ISupervisorLookup>(
+    provider =>
+        provider.GetRequiredService<AcademicSupervisorService>());
 builder.Services.AddScoped<AcademicSupervisorDataSeeder>();
+
+// PhD Applications module.
+builder.Services.AddScoped<PhdApplicationDao>();
+builder.Services.AddScoped<PhdApplicationService>();
+builder.Services.AddScoped<PhdApplicationDataSeeder>();
 
 var app = builder.Build();
 
@@ -86,6 +99,12 @@ using (var scope = app.Services.CreateScope())
             AcademicSupervisorDataSeeder>();
 
     await academicSupervisorSeeder.SeedAsync();
+
+    var phdApplicationSeeder =
+        serviceProvider.GetRequiredService<
+            PhdApplicationDataSeeder>();
+
+    await phdApplicationSeeder.SeedAsync();
 
     var researchActivityRepository =
         serviceProvider.GetRequiredService<
@@ -130,4 +149,3 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-

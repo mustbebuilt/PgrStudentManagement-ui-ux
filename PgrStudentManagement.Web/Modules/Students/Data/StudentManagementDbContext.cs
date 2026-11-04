@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using PgrStudentManagement.Web.Modules.AcademicSupervisors.Models;
+using PgrStudentManagement.Web.Modules.PhdApplications.Models;
 using PgrStudentManagement.Web.Modules.Students.Models;
 
 namespace PgrStudentManagement.Web.Modules.Students.Data;
@@ -27,13 +28,17 @@ public class StudentManagementDbContext : DbContext
     public DbSet<SupervisoryAssignment> SupervisoryAssignments =>
         Set<SupervisoryAssignment>();
 
+    // Tables for PhD applications module
+    public DbSet<PhdApplication> PhdApplications =>
+        Set<PhdApplication>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         ConfigureStudents(modelBuilder);
         ConfigureAcademicSupervisors(modelBuilder);
-
+        ConfigurePhdApplications(modelBuilder);
     }
 
     private static void ConfigureStudents(ModelBuilder modelBuilder)
@@ -130,6 +135,82 @@ public class StudentManagementDbContext : DbContext
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Ignore(assignment => assignment.Current);
+            });
+    }
+
+    private static void ConfigurePhdApplications(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PhdApplication>(
+            entity =>
+            {
+                entity.ToTable("PhdApplications");
+
+                entity.HasKey(application =>
+                    application.ApplicationReference);
+
+                entity.Property(application =>
+                        application.ApplicationReference)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(application => application.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(application => application.LastName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(application => application.EmailAddress)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(application => application.ProgrammeCode)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(application => application.ModeOfStudy)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(application => application.ProposedThesisTitle)
+                    .IsRequired()
+                    .HasMaxLength(300);
+
+                entity.Property(application => application.ResearchSummary)
+                    .HasMaxLength(2000);
+
+                entity.Property(application =>
+                        application.ProposedSupervisorStaffNumber)
+                    .HasMaxLength(20);
+
+                entity.Property(application =>
+                        application.EnrolledStudentNumber)
+                    .HasMaxLength(20);
+
+                entity.Property(application => application.FundingSource)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .IsRequired();
+
+                entity.Property(application => application.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .IsRequired();
+
+                entity.HasOne<AcademicSupervisor>()
+                    .WithMany()
+                    .HasForeignKey(application =>
+                        application.ProposedSupervisorStaffNumber)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne<Student>()
+                    .WithMany()
+                    .HasForeignKey(application =>
+                        application.EnrolledStudentNumber)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
     }
 }
