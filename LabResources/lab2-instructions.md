@@ -48,18 +48,18 @@ Verify you can open `http://localhost:5278/PhdApplications/Create` in a second b
 
 ## Part 1: 5-Minute Peer "Guerrilla Usability Test"
 
-Automated tools can verify technical accessibility rules, but they cannot tell you whether a human understands what to type or feels overwhelmed by a wall of 19 inputs. Before running any tools, conduct a quick 5-minute observational test with a classmate.
+Automated tools can verify technical accessibility rules, but they cannot tell you whether a human understands what to type or feels overwhelmed by a wall of 12 ungrouped text inputs. Before running any tools, conduct a quick 5-minute observational test with a classmate.
 
 ### How to Run the Test
 
 1. Pair up with another student.
 2. Ask your partner to complete the **User Scenario** below on the **Pre** version (`http://localhost:5277/PhdApplications/Create`) first, thinking aloud as they go.
-3. **Do not give hints** (for example, do not tell them what numbers `FundingType` expects or where to find a Supervisor's GUID). Only step in if they are completely stuck for more than 60 seconds.
+3. **Do not give hints** (for example, do not tell them what values `FundingType` expects or where to find a Supervisor's staff number). Only step in if they are completely stuck for more than 60 seconds.
 4. Repeat the exact same scenario on your **Post** version (`http://localhost:5278/PhdApplications/Create`).
 
 ### User Scenario Script
 
-> *"Imagine you are **Alex Morgan** (`alex.morgan@example.ac.uk`, phone `07700 900123`, born `14 May 1999`, from `United Kingdom`, First-Class BSc Honours). You want to apply for a **Part-Time PhD** starting in **October 2027**, funded by a **Studentship**, supervised by **Dr Robin Carter**, researching **'Automated Accessibility Testing in Higher Education Portals'**.*
+> *"Imagine you are **Alex Morgan** (`alex.morgan@example.ac.uk`). You want to apply for a **Part-time** PhD in **Computing (`PHD-COMP`)** starting on **1 October 2027**, funded by a **University studentship**, supervised by **Robin Carter**, with the working thesis title **'Automated Accessibility Testing in Higher Education Portals'** and a short research summary.*
 >
 > *1. Start filling out the application and save a draft after entering your personal details.*
 > *2. Complete and submit the full application.*
@@ -86,15 +86,15 @@ Modern browsers compile the HTML DOM into an **Accessibility Tree** that screen 
 
 1. Open Chrome or Edge DevTools (`F12` or `Cmd+Opt+I` / `Ctrl+Shift+I`).
 2. In the **Elements** panel, open the secondary sidebar (`Computed` / `Layout` / **Accessibility**) and select **Accessibility**, then check **Enable full-page accessibility tree** (or inspect individual inputs).
-3. Inspect the **`IsPartTime` (Mode of study)** and **`MainSupervisorId`** controls on both versions and compare what the browser reports:
+3. Inspect the **`ModeOfStudy` (Mode of study)** and **`ProposedSupervisorStaffNumber` (Proposed main supervisor)** controls on both versions and compare what the browser reports:
 
 | Property in Accessibility Tree | Pre (`:5277`) | Post (`:5278`) |
 |---|---|---|
-| **`IsPartTime` Role** | `textbox` | `radio` inside `group` (`"Mode of study"`) |
-| **`MainSupervisorId` Role** | `textbox` | `combobox` with named `<option>` items |
-| **`ApplicationReference` Computed Name** | `"ApplicationReference"` (CamelCase) | `"Application reference"` (or auto-generated) |
+| **`ModeOfStudy` Role** | `textbox` | `radio` inside `group` (`"Mode of study"`) |
+| **`ProposedSupervisorStaffNumber` Role** | `textbox` | `combobox` with named `<option>` items |
+| **`ApplicationReference` Computed Name** | `"ApplicationReference"` (CamelCase) | *(auto-generated on server; removed from form)* |
 | **`Description` (`aria-describedby`)** | *(empty)* | Format hint + error message when invalid |
-| **`Invalid` state on empty submit** | `false` (silent failure) | `true` (`aria-invalid="true"`) |
+| **`Invalid` state on empty submit** | `false` (silent failure) | `true` (native HTML5 `:invalid` / `aria-invalid="true"`) |
 
 ### 2.2 Run a Lighthouse Accessibility Audit
 
@@ -197,45 +197,63 @@ import AxeBuilder from '@axe-core/playwright';
 
 test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
 
-  test('1. Human-Readable Labels: Controls can be found by plain-English labels', async ({ page }) => {
+  test('1. Human-Readable Labels & HTML Constraints: Controls use plain-English labels and HTML5 validation attributes', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
     // A user (or screen reader) looks for "First name", "Last name", "Email address"
-    // PRE FAILS: Labels are raw C# property names ("FirstName", "LastName", "Email")
-    // POST PASSES: Labels use human-readable text
-    await expect(page.getByLabel('First name')).toBeVisible();
-    await expect(page.getByLabel('Last name')).toBeVisible();
-    await expect(page.getByLabel('Email address')).toBeVisible();
-    await expect(page.getByLabel('Date of birth')).toBeVisible();
+    // PRE FAILS: Labels are raw C# property names ("FirstName", "LastName", "EmailAddress")
+    // POST PASSES: Labels use human-readable text and native HTML5 validation attributes
+    const firstName = page.getByLabel('First name');
+    const lastName = page.getByLabel('Last name');
+    const email = page.getByLabel('Email address');
+
+    await expect(firstName).toBeVisible();
+    await expect(firstName).toHaveAttribute('required', '');
+    await expect(lastName).toBeVisible();
+    await expect(lastName).toHaveAttribute('required', '');
+    await expect(email).toBeVisible();
+    await expect(email).toHaveAttribute('type', 'email');
+    await expect(email).toHaveAttribute('required', '');
   });
 
   test('2. Semantic Controls: Constrained choices use radios and dropdowns instead of textboxes', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
-    // Navigate to Step 3 if using a progressive multi-step form
-    const step3Btn = page.getByRole('button', { name: /3\. Supervision & Funding/i });
-    if (await step3Btn.isVisible()) {
-      await step3Btn.click();
+    // Navigate to Step 2 if using the progressive multi-step form
+    const step2Btn = page.getByRole('button', { name: /2\. Programme/i });
+    if (await step2Btn.isVisible()) {
+      await step2Btn.click();
     }
 
-    // PRE FAILS: IsPartTime and MainSupervisorId are generic role="textbox" inputs
+    // PRE FAILS: ModeOfStudy and ProposedSupervisorStaffNumber are generic role="textbox" inputs
     // POST PASSES: Mode of study is a fieldset radio group and Supervisor is a combobox
     const studyModeGroup = page.getByRole('group', { name: /Mode of study/i });
     await expect(studyModeGroup).toBeVisible();
     await expect(studyModeGroup.getByRole('radio')).toHaveCount(2);
 
+    // Navigate to Step 4 if using the progressive multi-step form
+    const step4Btn = page.getByRole('button', { name: /4\. Funding/i });
+    if (await step4Btn.isVisible()) {
+      await step4Btn.click();
+    }
+
     const supervisorSelect = page.getByRole('combobox', { name: /Proposed main supervisor/i });
     await expect(supervisorSelect).toBeVisible();
-    // Should contain real supervisor names rather than requiring a raw GUID
+    // Should contain real supervisor names rather than requiring a raw staff number
     const optionCount = await supervisorSelect.locator('option').count();
     expect(optionCount).toBeGreaterThan(1);
   });
 
-  test('3. Error Recovery & Keyboard Focus: Empty submit focuses Error Summary and links to invalid fields', async ({ page }) => {
+  test('3. Error Recovery & Keyboard Focus: Server validation focuses Error Summary and links to invalid fields', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
+    // Bypass browser HTML5 constraint blocking so we can verify server-side accessible error recovery
+    await page.locator('form').evaluate((form: HTMLFormElement) => {
+      form.noValidate = true;
+    });
+
     // Submit the form empty
-    const submitBtn = page.getByRole('button', { name: /Submit application|Create Application/i }).first();
+    const submitBtn = page.getByRole('button', { name: /Submit application|Create/i }).first();
     await submitBtn.click();
 
     // PRE FAILS: Page reloads silently with no alert, no title change, and no aria-invalid
@@ -263,10 +281,10 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
   test('4. Live Feedback & Task-Saving: Character counter updates and Save Draft works with partial data', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
-    // Navigate to Step 2 if using multi-step panels
-    const step2Btn = page.getByRole('button', { name: /2\. Qualification & Proposal/i });
-    if (await step2Btn.isVisible()) {
-      await step2Btn.click();
+    // Navigate to Step 3 if using multi-step panels
+    const step3Btn = page.getByRole('button', { name: /3\. Proposal/i });
+    if (await step3Btn.isVisible()) {
+      await step3Btn.click();
     }
 
     // Check live character counter on Research Summary
@@ -276,7 +294,7 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     await expect(counter).toContainText(/remaining/i);
 
     // Navigate back to Step 1 if needed, enter minimal details, and Save as Draft
-    const step1Btn = page.getByRole('button', { name: /1\. Applicant Details/i });
+    const step1Btn = page.getByRole('button', { name: /1\. About you/i });
     if (await step1Btn.isVisible()) {
       await step1Btn.click();
     }
@@ -406,7 +424,10 @@ public class PhdApplicationUxTests : IAsyncLifetime
         var page = await _browser.NewPageAsync();
         await page.GotoAsync($"{_baseUrl}/PhdApplications/Create");
 
-        await page.GetByRole(AriaRole.Button, new() { NameRegex = new("Submit application|Create Application") })
+        // Bypass native HTML5 constraint blocking to test server-side error summary recovery
+        await page.Locator("form").EvaluateAsync("form => form.noValidate = true");
+
+        await page.GetByRole(AriaRole.Button, new() { NameRegex = new("Submit application|Create") })
             .First.ClickAsync();
 
         // Title starts with "Error:"
@@ -449,7 +470,7 @@ Complete the summary table below comparing your findings across all four testing
 
 ### Reflection Questions
 
-1. **Automated vs. Manual Detection**: Why did Lighthouse and `axe-core` give the **Pre** version a relatively high score despite the form being almost unusable for a human (requiring raw GUIDs and integer enum codes)? What does this tell you about relying solely on automated accessibility scanners?
-2. **Playwright Locators as UX Tests**: How did writing Playwright tests with `getByLabel` and `getByRole` expose usability flaws that a CSS selector test (`page.locator('#MainSupervisorId')`) would have missed?
-3. **Error Recovery**: How did adding the focusable `#error-summary[role="alert"]`, the `Error:` page `<title>` prefix, and `aria-invalid="true"` change the experience for a keyboard-only or screen-reader user when submitting an incomplete form?
+1. **Automated vs. Manual Detection**: Why did Lighthouse and `axe-core` give the **Pre** version a relatively high score despite the form being almost unusable for a human (requiring raw staff numbers like `AS1001` and exact enum strings)? What does this tell you about relying solely on automated accessibility scanners?
+2. **Playwright Locators as UX Tests**: How did writing Playwright tests with `getByLabel` and `getByRole` expose usability flaws that a CSS selector test (`page.locator('#ProposedSupervisorStaffNumber')`) would have missed?
+3. **Error Recovery**: How did combining native HTML5 validation constraints (`required`, `maxlength`, `type="email"`) with the server-side focusable `#error-summary[role="alert"]`, the `Error:` page `<title>` prefix, and `aria-invalid="true"` change the experience for a keyboard-only or screen-reader user when submitting an incomplete form?
 

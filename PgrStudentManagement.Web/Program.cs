@@ -20,8 +20,10 @@ using PgrStudentManagement.Web.Modules.ResearchActivities.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MVC services.
-builder.Services.AddControllersWithViews();
+// Add MVC services (using native HTML validation rather than jQuery unobtrusive data-val attributes).
+builder.Services.AddControllersWithViews()
+    .AddViewOptions(options =>
+        options.HtmlHelperOptions.ClientValidationEnabled = false);
 
 // Configure relational persistence.
 builder.Services.AddDbContext<StudentManagementDbContext>(

@@ -27,7 +27,9 @@
         </label>
 
         <input asp-for="StaffNumber"
-               class="form-control" />
+               class="form-control"
+               required
+               maxlength="20" />
 
         <span asp-validation-for="StaffNumber"
               class="text-danger"></span>
@@ -41,7 +43,9 @@
             </label>
 
             <input asp-for="FirstName"
-                   class="form-control" />
+                   class="form-control"
+                   required
+                   maxlength="100" />
 
             <span asp-validation-for="FirstName"
                   class="text-danger"></span>
@@ -54,7 +58,9 @@
             </label>
 
             <input asp-for="LastName"
-                   class="form-control" />
+                   class="form-control"
+                   required
+                   maxlength="100" />
 
             <span asp-validation-for="LastName"
                   class="text-danger"></span>
@@ -69,7 +75,9 @@
 
         <input asp-for="EmailAddress"
                type="email"
-               class="form-control" />
+               class="form-control"
+               required
+               maxlength="255" />
 
         <span asp-validation-for="EmailAddress"
               class="text-danger"></span>
@@ -84,7 +92,8 @@
         <select asp-for="EmploymentType"
                 asp-items=
                     "Html.GetEnumSelectList<SupervisorEmploymentType>()"
-                class="form-select">
+                class="form-select"
+                required>
         </select>
 
         <span asp-validation-for="EmploymentType"
@@ -136,7 +145,3 @@
         Cancel
     </a>
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

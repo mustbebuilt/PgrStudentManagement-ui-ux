@@ -41,7 +41,7 @@ By the end of Lab 1 you should be able to:
 2. Replace plain text boxes with semantic HTML controls (`email`, `date`, `<select>`, `<textarea>`, radio `<fieldset>`s).
 3. Add clear labels, hint text (`aria-describedby`), groupings (`<fieldset>`/`<legend>`), and live character counts (`aria-live="polite"`).
 4. Add server-side validation and display errors accessibly (focusable error summary + inline field errors with `aria-invalid="true"`).
-5. Add progressive client-side validation without breaking no-JavaScript support.
+5. Use native HTML5 client-side constraint validation (`required`, `maxlength`, `type="email"`, `type="date"`).
 6. Split a long form into logical sections with a **Save as draft and return later** feature.
 
 ### Files you will work with
@@ -199,20 +199,15 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
 
 ---
 
-## Part 6 – Client-Side Validation (Progressive Enhancement)
+## Part 6 – Client-Side Validation (Native HTML5 Constraints)
 
-**Goal:** Give instant feedback in the browser while keeping server-side validation as the fallback when JavaScript is disabled.
+**Goal:** Give instant feedback in the browser using native HTML5 constraint validation while keeping server-side validation as the authoritative check.
 
 ### Step-by-Step Instructions
 
-1. Add `novalidate` to `<form asp-action="Create" method="post" novalidate>` in `Create.cshtml` so the browser's unstyled native tooltips don't obscure your accessible error messages.
-2. At the bottom of `Create.cshtml`, include the validation scripts partial:
-   ```cshtml
-   @section Scripts {
-       <partial name="_ValidationScriptsPartial" />
-   }
-   ```
-   *(If you already added `@section Scripts` in Part 3 for the character counter, place `<partial name="_ValidationScriptsPartial" />` at the top of that section—see [**Snippet 3.B**](./code-snippets.md#snippet-3b-accessible-live-character-counter-aria-livepolite).)*
+1. Add native HTML5 validation attributes (`required`, `maxlength`, `type="email"`, `type="date"`) directly to the form controls in `Create.cshtml` matching the rules in `CreatePhdApplicationViewModel` (see [**Snippet 6.A** in `code-snippets.md`](./code-snippets.md#snippet-6a-adding-html5-validation-attributes-in-createcshtml)).
+2. Leave `required` off the optional `ResearchSummary` and `ProposedSupervisorStaffNumber` controls.
+3. No jQuery or JavaScript validation libraries are needed—the browser enforces HTML constraints natively, while `formnovalidate` on the draft button (Part 7) allows saving partial drafts.
 
 ---
 

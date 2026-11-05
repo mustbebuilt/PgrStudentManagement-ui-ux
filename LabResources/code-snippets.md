@@ -23,8 +23,8 @@ This companion file contains ready-to-adapt code snippets for every part of [`la
 - [Part 5 – Accessible Error Summary & Inline Error Messages](#part-5--accessible-error-summary--inline-error-messages)
   - [Snippet 5.A: Focusable Error Summary with Anchor Links to Fields](#snippet-5a-focusable-error-summary-with-anchor-links-to-fields)
   - [Snippet 5.B: Inline Error Message with `aria-invalid` and `aria-describedby`](#snippet-5b-inline-error-message-with-aria-invalid-and-aria-describedby)
-- [Part 6 – Client-Side Validation (Progressive Enhancement)](#part-6--client-side-validation-progressive-enhancement)
-  - [Snippet 6.A: Enabling Unobtrusive Validation in `Create.cshtml`](#snippet-6a-enabling-unobtrusive-validation-in-createcshtml)
+- [Part 6 – Client-Side Validation (Native HTML5 Constraints)](#part-6--client-side-validation-native-html5-constraints)
+  - [Snippet 6.A: Adding HTML5 Validation Attributes in `Create.cshtml`](#snippet-6a-adding-html5-validation-attributes-in-createcshtml)
 - [Part 7 – Sectioned Form with "Save and Return Later"](#part-7--sectioned-form-with-save-and-return-later)
   - [Snippet 7.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts](#snippet-7a-update-applicationstatuscs-and-phdapplicationcs-for-drafts)
   - [Snippet 7.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)](#snippet-7b-update-studentmanagementdbcontextcs-configurephdapplications)
@@ -393,12 +393,10 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 
 ### Snippet 3.B: Accessible Live Character Counter (`aria-live="polite"`)
 
-**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (inside `@section Scripts`)
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (inside `@section Scripts`, or handled automatically by `wwwroot/js/site.js`)
 
 ```cshtml
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
         (function () {
             const textarea = document.getElementById('ResearchSummary');
@@ -594,17 +592,31 @@ When a specific field has a validation error, linking its error `<span>` in `ari
 
 ---
 
-## Part 6 – Client-Side Validation (Progressive Enhancement)
+## Part 6 – Client-Side Validation (Native HTML5 Constraints)
 
-### Snippet 6.A: Enabling Unobtrusive Validation in `Create.cshtml`
+### Snippet 6.A: Adding HTML5 Validation Attributes in `Create.cshtml`
 
-1. Add `novalidate` to `<form asp-action="Create" method="post" novalidate>` so the browser's unstyled native popups don't conflict with your accessible error messages.
-2. Ensure `@section Scripts` at the bottom of `Create.cshtml` includes `_ValidationScriptsPartial`:
+Client-side validation in this application uses native HTML5 constraint attributes only (no jQuery or JavaScript validation libraries):
+
+1. Add `required` and `maxlength` attributes directly to the required controls in `Create.cshtml`:
+   - `FirstName`: `required maxlength="100"`
+   - `LastName`: `required maxlength="100"`
+   - `EmailAddress`: `type="email" required maxlength="255"`
+   - `ProgrammeCode` (`<select>`): `required`
+   - `ModeOfStudy` (radio buttons): `required`
+   - `ProposedStartDate`: `type="date" required`
+   - `ProposedThesisTitle`: `required maxlength="300"`
+   - `ResearchSummary` (`<textarea>`): `maxlength="2000"` (leave `required` off because this field is optional)
+   - `FundingSource` (radio buttons): `required`
+2. Keep `formnovalidate` on the **"Save as draft and return later"** submit button (in Part 7) so applicants can save partial progress without being blocked by browser constraint validation.
 
 ```cshtml
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<input asp-for="FirstName"
+       class="form-control"
+       autocomplete="given-name"
+       spellcheck="false"
+       required
+       maxlength="100" />
 ```
 
 ---
@@ -774,7 +786,8 @@ If you want to split the long form on `Create.cshtml` into 4 navigable step pane
 ```
 
 ```javascript
-// Add inside @section Scripts to show one section at a time when JS is enabled:
+// Vanilla JS (already included in wwwroot/js/site.js) to show one section at a time
+// and reveal hidden panels if native HTML5 validation flags an input inside them:
 (function () {
     const panels = document.querySelectorAll('[data-step-panel]');
     const buttons = document.querySelectorAll('[data-step]');
@@ -795,6 +808,16 @@ If you want to split the long form on `Create.cshtml` into 4 navigable step pane
     buttons.forEach(btn => {
         btn.addEventListener('click', () => showStep(btn.getAttribute('data-step')));
     });
+
+    const form = panels[0].closest('form');
+    if (form) {
+        form.addEventListener('invalid', (event) => {
+            const panel = event.target.closest?.('[data-step-panel]');
+            if (panel && panel.hidden) {
+                showStep(panel.getAttribute('data-step-panel'));
+            }
+        }, true);
+    }
 
     showStep(1);
 })();

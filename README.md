@@ -142,7 +142,7 @@ This project includes a two-part hands-on lab sequence focused on improving form
   - **Part 2**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
   - **Part 3**: Accessible labels, hint text, grouping (`<fieldset>`/`<legend>`), and character counts.
   - **Part 4 & 5**: Accessible server-side error validation (error summary, inline messages, focus management).
-  - **Part 6**: Progressive enhancement with unobtrusive client-side validation.
+  - **Part 6**: Native HTML5 client-side validation (`required`, `maxlength`, `type="email"`, `type="date"`).
   - **Part 7**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
   - **Part 8**: Progressive disclosure and error prevention on status decision forms.
 - **Lab 2 — Pre vs. Post Usability & Accessibility Testing**: [`LabResources/lab2-instructions.md`](./LabResources/lab2-instructions.md)

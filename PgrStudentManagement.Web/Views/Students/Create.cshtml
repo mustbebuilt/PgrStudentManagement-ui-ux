@@ -14,7 +14,9 @@
         <label asp-for="StudentNumber"
                class="form-label"></label>
         <input asp-for="StudentNumber"
-               class="form-control" />
+               class="form-control"
+               required
+               maxlength="20" />
         <span asp-validation-for="StudentNumber"
               class="text-danger"></span>
     </div>
@@ -23,7 +25,9 @@
         <label asp-for="FirstName"
                class="form-label"></label>
         <input asp-for="FirstName"
-               class="form-control" />
+               class="form-control"
+               required
+               maxlength="100" />
         <span asp-validation-for="FirstName"
               class="text-danger"></span>
     </div>
@@ -32,7 +36,9 @@
         <label asp-for="LastName"
                class="form-label"></label>
         <input asp-for="LastName"
-               class="form-control" />
+               class="form-control"
+               required
+               maxlength="100" />
         <span asp-validation-for="LastName"
               class="text-danger"></span>
     </div>

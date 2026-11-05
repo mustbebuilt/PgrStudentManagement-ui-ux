@@ -79,7 +79,8 @@ else
 
                 <select id="StaffNumber"
                         name="StaffNumber"
-                        class="form-select">
+                        class="form-select"
+                        required>
                     <option value="">
                         Select an Academic Supervisor
                     </option>
@@ -117,7 +118,8 @@ else
 
                 <select id="Role"
                         name="Role"
-                        class="form-select">
+                        class="form-select"
+                        required>
                     <option value="">
                         Select a role
                     </option>
@@ -161,6 +163,7 @@ else
                        name="StartDate"
                        type="date"
                        class="form-control"
+                       required
                        value=
                            "@DateTime.Today.ToString("yyyy-MM-dd")" />
             </div>
