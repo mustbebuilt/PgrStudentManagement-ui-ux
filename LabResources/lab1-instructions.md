@@ -9,21 +9,40 @@ In **Lab 2** ([`lab2-instructions.md`](./lab2-instructions.md)), you will run **
 
 ---
 
-## Before You Start: Create a Feature Branch
+## Before You Start: Workspace Setup & Creating a Feature Branch
 
-Because **Lab 2** compares the untouched **`main` branch** against your improved branch, you should do all of your Lab 1 work on a new Git branch:
+Because **Lab 2** will run automated usability and accessibility tests against **both** the untouched **`main` branch** and your improved **`ui-ux-improvements` branch**, you should organize your workspace so tests can sit in a folder **above / outside** the repository:
 
-1. Fork the repository on GitHub (if you have not already) and clone it to your machine:
+```text
+pgr-workspace/                      <-- Dedicated parent folder
+├── PgrStudentManagement-ui-ux/     <-- Cloned repository (branches: main, ui-ux-improvements)
+└── ui-ux-tests/                    <-- Test suite added in Lab 2 (lives outside the repo)
+```
+
+### Why place tests above the repository?
+If test files were placed inside the Git repository, running `git switch main` in Lab 2 would cause Git to either overwrite, stash, or complain about untracked test files. Keeping test projects in a parent directory above the repository ensures:
+1. **Branch independence**: Switching between `main` and `ui-ux-improvements` never modifies, stashes, or deletes your test code.
+2. **Multi-branch evaluation**: A single, unchanging test suite can run against whichever branch is currently hosted on `http://localhost:5277` (or test both concurrently via `git worktree`).
+3. **Clean commits**: Test runner artifacts (`node_modules/`, `test-results/`, Playwright binaries) stay out of the application repository.
+
+### Step-by-Step Setup
+
+1. **Create a parent workspace folder and clone into it:**
    ```bash
+   # Create and enter a dedicated parent folder
+   mkdir pgr-workspace
+   cd pgr-workspace
+
+   # Fork the repository on GitHub, then clone it inside the parent folder
    git clone https://github.com/<your-username>/PgrStudentManagement-ui-ux.git
    cd PgrStudentManagement-ui-ux
    ```
-2. Ensure your `main` branch is clean, then create and switch to a new branch named `ui-ux-improvements`:
+2. **Ensure your `main` branch is clean, then create and switch to a new branch named `ui-ux-improvements`:**
    ```bash
    git switch -c ui-ux-improvements
    ```
    *(Or `git checkout -b ui-ux-improvements` on older Git versions.)*
-3. Push the new branch to your GitHub repository so it tracks your remote branch:
+3. **Push the new branch to your GitHub repository so it tracks your remote branch:**
    ```bash
    git push -u origin ui-ux-improvements
    ```

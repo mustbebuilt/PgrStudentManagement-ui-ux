@@ -126,7 +126,7 @@ dotnet test
 This project includes a two-part hands-on lab sequence focused on improving form and data-table usability and accessibility (WCAG 2.2) in ASP.NET Core MVC, followed by branch-vs-branch usability and accessibility evaluation:
 
 - **Lab 1 — UI/UX & Accessibility Implementation**: [`LabResources/lab1-instructions.md`](./LabResources/lab1-instructions.md)
-  - **Branch Setup**: Creating a dedicated `ui-ux-improvements` Git branch so the `main` branch remains untouched as a baseline for testing.
+  - **Workspace & Branch Setup**: Organizing files in a dedicated parent workspace folder so external test suites in Lab 2 can sit outside the repository and evaluate multiple branches (`main` vs `ui-ux-improvements`).
   - **Part 0**: Usability and accessibility audit of the starter forms and table.
   - **Part 1 (Quick Wins)**: Fixing non-WCAG-compliant button colour contrast (`2.12:1` -> `8.86:1`, WCAG 1.4.3) via `:root` CSS variables in `wwwroot/css/site.css` and replacing `<span>` prompts with semantic `<label asp-for="...">` tags (WCAG 1.3.1 & 4.1.2).
   - **Part 2**: Minimising user input to prevent errors by decoupling forms from entities using View Models, auto-generating system fields, and providing post-redirect user feedback via `TempData` and `role="status"` (WCAG 4.1.3).
