@@ -6,41 +6,195 @@ This companion file contains ready-to-adapt code snippets for every part of [`la
 
 ## Table of Contents
 
-- [Part 1 – View Model & Controller Binding](#part-1--view-model--controller-binding)
-  - [Snippet 1.A: Create `CreatePhdApplicationViewModel.cs`](#snippet-1a-create-createphdapplicationviewmodelcs)
-  - [Snippet 1.B: Update `PhdApplicationsController.Create` (GET & POST)](#snippet-1b-update-phdapplicationscontrollercreate-get--post)
-- [Part 2 – Appropriate HTML Input Types & Controls](#part-2--appropriate-html-input-types--controls)
-  - [Snippet 2.A: Personal Details & Email (`type="email"`, `autocomplete`)](#snippet-2a-personal-details--email-typeemail-autocomplete)
-  - [Snippet 2.B: Programme `<select>` & Mode of Study Radio Buttons (`<fieldset>`)](#snippet-2b-programme-select--mode-of-study-radio-buttons-fieldset)
-  - [Snippet 2.C: Funding Source Radio Buttons from Enum](#snippet-2c-funding-source-radio-buttons-from-enum)
-  - [Snippet 2.D: Proposed Supervisor `<select>` Dropdown](#snippet-2d-proposed-supervisor-select-dropdown)
-- [Part 3 – Labels, Hints (`aria-describedby`) & Live Character Counter](#part-3--labels-hints-aria-describedby--live-character-counter)
-  - [Snippet 3.A: Textarea with Hint Text Linked via `aria-describedby`](#snippet-3a-textarea-with-hint-text-linked-via-aria-describedby)
-  - [Snippet 3.B: Accessible Live Character Counter (`aria-live="polite"`)](#snippet-3b-accessible-live-character-counter-aria-livepolite)
-- [Part 4 – Server-Side Validation Attributes](#part-4--server-side-validation-attributes)
-  - [Snippet 4.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes](#snippet-4a-createphdapplicationviewmodelcs-with-validation--display-attributes)
-  - [Snippet 4.B: Adding Display Names to `FundingType.cs`](#snippet-4b-adding-display-names-to-fundingtypecs)
-- [Part 5 – Accessible Error Summary & Inline Error Messages](#part-5--accessible-error-summary--inline-error-messages)
-  - [Snippet 5.A: Focusable Error Summary with Anchor Links to Fields](#snippet-5a-focusable-error-summary-with-anchor-links-to-fields)
-  - [Snippet 5.B: Inline Error Message with `aria-invalid` and `aria-describedby`](#snippet-5b-inline-error-message-with-aria-invalid-and-aria-describedby)
-- [Part 6 – Client-Side Validation (Native HTML5 Constraints)](#part-6--client-side-validation-native-html5-constraints)
-  - [Snippet 6.A: Adding HTML5 Validation Attributes in `Create.cshtml`](#snippet-6a-adding-html5-validation-attributes-in-createcshtml)
-- [Part 7 – Sectioned Form with "Save and Return Later"](#part-7--sectioned-form-with-save-and-return-later)
-  - [Snippet 7.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts](#snippet-7a-update-applicationstatuscs-and-phdapplicationcs-for-drafts)
-  - [Snippet 7.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)](#snippet-7b-update-studentmanagementdbcontextcs-configurephdapplications)
-  - [Snippet 7.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`](#snippet-7c-add-draft-save--final-submit-methods-to-phdapplicationservicecs)
-  - [Snippet 7.D: Dual Submit Buttons ("Submit" vs "Save and return later")](#snippet-7d-dual-submit-buttons-submit-vs-save-and-return-later)
-  - [Snippet 7.E: Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels](#snippet-7e-multi-step-wizard-tabs--sections-with-fieldset-panels)
-- [Part 8 – Improving `EditStatus.cshtml` (Admissions Decision Form)](#part-8--improving-editstatuscshtml-admissions-decision-form)
-  - [Snippet 8.A: Controller & View for Allowed Status Transitions](#snippet-8a-controller--view-for-allowed-status-transitions)
-- [Part 9 – Improving `Index.cshtml` (Table Accessibility & Filter)](#part-9--improving-indexcshtml-table-accessibility--filter)
-  - [Snippet 9.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links](#snippet-9a-accessible-table-with-caption-scopecol-filter-and-context-links)
+- [Part 1 – Quick Wins: Colour Contrast & Semantic `<label>` Elements](#part-1--quick-wins-colour-contrast--semantic-label-elements)
+  - [Snippet 1.A: Fix Primary Button Colour Contrast in `wwwroot/css/site.css`](#snippet-1a-fix-primary-button-colour-contrast-in-wwwrootcsssitecss)
+  - [Snippet 1.B: Replace `<span>` Prompts with Semantic `<label asp-for="...">` Elements in `Create.cshtml`](#snippet-1b-replace-span-prompts-with-semantic-label-asp-for-elements-in-createcshtml)
+- [Part 2 – View Model, Controller Binding & `TempData` User Feedback](#part-2--view-model-controller-binding--tempdata-user-feedback)
+  - [Snippet 2.A: Create `CreatePhdApplicationViewModel.cs`](#snippet-2a-create-createphdapplicationviewmodelcs)
+  - [Snippet 2.B: Update `PhdApplicationsController.Create` (GET & POST)](#snippet-2b-update-phdapplicationscontrollercreate-get--post)
+  - [Snippet 2.C: Display `TempData["SuccessMessage"]` Banner in `Details.cshtml`](#snippet-2c-display-tempdatasuccessmessage-banner-in-detailscshtml)
+- [Part 3 – Appropriate HTML Input Types & Controls](#part-3--appropriate-html-input-types--controls)
+  - [Snippet 3.A: Personal Details & Email (`type="email"`, `autocomplete`)](#snippet-3a-personal-details--email-typeemail-autocomplete)
+  - [Snippet 3.B: Programme `<select>` & Mode of Study Radio Buttons (`<fieldset>`)](#snippet-3b-programme-select--mode-of-study-radio-buttons-fieldset)
+  - [Snippet 3.C: Funding Source Radio Buttons from Enum](#snippet-3c-funding-source-radio-buttons-from-enum)
+  - [Snippet 3.D: Proposed Supervisor `<select>` Dropdown](#snippet-3d-proposed-supervisor-select-dropdown)
+- [Part 4 – Labels, Hints (`aria-describedby`) & Live Character Counter](#part-4--labels-hints-aria-describedby--live-character-counter)
+  - [Snippet 4.A: Textarea with Hint Text Linked via `aria-describedby`](#snippet-4a-textarea-with-hint-text-linked-via-aria-describedby)
+  - [Snippet 4.B: Accessible Live Character Counter (`aria-live="polite"`)](#snippet-4b-accessible-live-character-counter-aria-livepolite)
+- [Part 5 – Server-Side Validation Attributes](#part-5--server-side-validation-attributes)
+  - [Snippet 5.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes](#snippet-5a-createphdapplicationviewmodelcs-with-validation--display-attributes)
+  - [Snippet 5.B: Adding Display Names to `FundingType.cs`](#snippet-5b-adding-display-names-to-fundingtypecs)
+- [Part 6 – Accessible Error Summary & Inline Error Messages](#part-6--accessible-error-summary--inline-error-messages)
+  - [Snippet 6.A: Focusable Error Summary with Anchor Links to Fields](#snippet-6a-focusable-error-summary-with-anchor-links-to-fields)
+  - [Snippet 6.B: Inline Error Message with `aria-invalid` and `aria-describedby`](#snippet-6b-inline-error-message-with-aria-invalid-and-aria-describedby)
+- [Part 7 – Client-Side Validation (Native HTML5 Constraints)](#part-7--client-side-validation-native-html5-constraints)
+  - [Snippet 7.A: Adding HTML5 Validation Attributes in `Create.cshtml`](#snippet-7a-adding-html5-validation-attributes-in-createcshtml)
+- [Part 8 (Optional Stretch Goal) – Sectioned Form with "Save and Return Later"](#part-8-optional-stretch-goal--sectioned-form-with-save-and-return-later)
+  - [Snippet 8.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts](#snippet-8a-update-applicationstatuscs-and-phdapplicationcs-for-drafts)
+  - [Snippet 8.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)](#snippet-8b-update-studentmanagementdbcontextcs-configurephdapplications)
+  - [Snippet 8.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`](#snippet-8c-add-draft-save--final-submit-methods-to-phdapplicationservicecs)
+  - [Snippet 8.D: Dual Submit Buttons ("Submit" vs "Save and return later")](#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later)
+  - [Snippet 8.E (Optional Stretch Goal): Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels](#snippet-8e-optional-stretch-goal-multi-step-wizard-tabs--sections-with-fieldset-panels)
+- [Part 9 – Improving `EditStatus.cshtml` (Admissions Decision Form)](#part-9--improving-editstatuscshtml-admissions-decision-form)
+  - [Snippet 9.A: Controller & View for Allowed Status Transitions](#snippet-9a-controller--view-for-allowed-status-transitions)
+- [Part 10 – Improving `Index.cshtml` (Table Accessibility & Filter)](#part-10--improving-indexcshtml-table-accessibility--filter)
+  - [Snippet 10.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links](#snippet-10a-accessible-table-with-caption-scopecol-filter-and-context-links)
 
 ---
 
-## Part 1 – View Model & Controller Binding
+## Part 1 – Quick Wins: Colour Contrast & Semantic `<label>` Elements
 
-### Snippet 1.A: Create `CreatePhdApplicationViewModel.cs`
+### Snippet 1.A: Fix Primary Button Colour Contrast in `wwwroot/css/site.css`
+
+**File to edit:** `PgrStudentManagement.Web/wwwroot/css/site.css`
+
+In the starter stylesheet, `--btn-primary-bg` is set to `#7cb8eb` (a light sky blue) paired with `--btn-primary-text: #ffffff` (white). That combination yields a contrast ratio of only **`2.12:1`**, failing **WCAG 2.2 Level AA Criterion 1.4.3 (Contrast Minimum)**, which requires at least **`4.5:1`** for normal text.
+
+Update the primary button CSS custom properties inside `:root` (around line 36 of `wwwroot/css/site.css`) to use `#0f4c81` (**`8.86:1`** contrast ratio against `#ffffff`, passing both WCAG AA and AAA):
+
+```css
+  /* Primary Button: Main form submissions & primary workflows */
+  --btn-primary-bg: #0f4c81;
+  --btn-primary-hover: #09355c;
+  --btn-primary-border: #0f4c81;
+  --btn-primary-text: #ffffff;
+```
+
+### Snippet 1.B: Replace `<span>` Prompts with Semantic `<label asp-for="...">` Elements in `Create.cshtml`
+
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
+
+In the starter `Create.cshtml`, each field prompt is rendered inside a plain `<span class="form-label">` element:
+
+```cshtml
+<!-- Starter code (unaccessible: no programmatic association with the input) -->
+<div class="mb-3">
+    <span class="form-label">FirstName</span>
+    <input type="text"
+           id="FirstName"
+           name="FirstName"
+           value="@Model.FirstName"
+           class="form-control" />
+</div>
+```
+
+Replace every `<span class="form-label">...</span>` with an ASP.NET Core `<label asp-for="..." class="form-label"></label>` tag helper so the rendered HTML includes `for="<FieldId>"` matching the input's `id`:
+
+```cshtml
+<div class="mb-3">
+    <label asp-for="ApplicationReference" class="form-label"></label>
+    <input type="text"
+           id="ApplicationReference"
+           name="ApplicationReference"
+           value="@Model.ApplicationReference"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="FirstName" class="form-label"></label>
+    <input type="text"
+           id="FirstName"
+           name="FirstName"
+           value="@Model.FirstName"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="LastName" class="form-label"></label>
+    <input type="text"
+           id="LastName"
+           name="LastName"
+           value="@Model.LastName"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="EmailAddress" class="form-label"></label>
+    <input type="text"
+           id="EmailAddress"
+           name="EmailAddress"
+           value="@Model.EmailAddress"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ProgrammeCode" class="form-label"></label>
+    <input type="text"
+           id="ProgrammeCode"
+           name="ProgrammeCode"
+           value="@Model.ProgrammeCode"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ModeOfStudy" class="form-label"></label>
+    <input type="text"
+           id="ModeOfStudy"
+           name="ModeOfStudy"
+           value="@Model.ModeOfStudy"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ProposedStartDate" class="form-label"></label>
+    <input type="text"
+           id="ProposedStartDate"
+           name="ProposedStartDate"
+           value="@Model.ProposedStartDate.ToString("yyyy-MM-dd")"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ProposedThesisTitle" class="form-label"></label>
+    <input type="text"
+           id="ProposedThesisTitle"
+           name="ProposedThesisTitle"
+           value="@Model.ProposedThesisTitle"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ResearchSummary" class="form-label"></label>
+    <input type="text"
+           id="ResearchSummary"
+           name="ResearchSummary"
+           value="@Model.ResearchSummary"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="FundingSource" class="form-label"></label>
+    <input type="text"
+           id="FundingSource"
+           name="FundingSource"
+           value="@Model.FundingSource"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="ProposedSupervisorStaffNumber" class="form-label"></label>
+    <input type="text"
+           id="ProposedSupervisorStaffNumber"
+           name="ProposedSupervisorStaffNumber"
+           value="@Model.ProposedSupervisorStaffNumber"
+           class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="SubmittedDate" class="form-label"></label>
+    <input type="text"
+           id="SubmittedDate"
+           name="SubmittedDate"
+           value="@Model.SubmittedDate.ToString("yyyy-MM-dd")"
+           class="form-control" />
+</div>
+```
+
+---
+
+## Part 2 – View Model, Controller Binding & `TempData` User Feedback
+
+### Snippet 2.A: Create `CreatePhdApplicationViewModel.cs`
 
 **File to create:** `PgrStudentManagement.Web/Modules/PhdApplications/Models/CreatePhdApplicationViewModel.cs`
 
@@ -77,7 +231,7 @@ public class CreatePhdApplicationViewModel
 }
 ```
 
-### Snippet 1.B: Update `PhdApplicationsController.Create` (GET & POST)
+### Snippet 2.B: Update `PhdApplicationsController.Create` (GET & POST)
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Controllers/PhdApplicationsController.cs`
 
@@ -182,11 +336,30 @@ Remember to also change line 1 of `Views/PhdApplications/Create.cshtml` to:
 ```
 And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` blocks from `Create.cshtml`!
 
+### Snippet 2.C: Display `TempData["SuccessMessage"]` Banner in `Details.cshtml`
+
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Details.cshtml`
+
+When `Create (POST)` or `EditStatus (POST)` succeeds, the controller calls `RedirectToAction(nameof(Details), ...)` (the **Post-Redirect-Get** pattern). Because a redirect triggers a second HTTP request, `ViewData` and `ViewBag` would be cleared before `Details.cshtml` renders. Storing the confirmation text in `TempData["SuccessMessage"]` preserves it across the single redirect and automatically removes it once read so refreshing the page does not repeat the alert.
+
+Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApplications/Details.cshtml`:
+
+```cshtml
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success" role="status">
+        @successMessage
+    </div>
+}
+```
+
+> **Accessibility tip (WCAG 4.1.3 Status Messages):** Using `role="status"` creates an implicit `aria-live="polite"` region so screen readers announce the confirmation message (including the newly generated application reference number) without moving keyboard focus away from the page content.
+
 ---
 
-## Part 2 – Appropriate HTML Input Types & Controls
+## Part 3 – Appropriate HTML Input Types & Controls
 
-### Snippet 2.A: Personal Details & Email (`type="email"`, `autocomplete`)
+### Snippet 3.A: Personal Details & Email (`type="email"`, `autocomplete`)
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
@@ -226,7 +399,7 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 </div>
 ```
 
-### Snippet 2.B: Programme `<select>` & Mode of Study Radio Buttons (`<fieldset>`)
+### Snippet 3.B: Programme `<select>` & Mode of Study Radio Buttons (`<fieldset>`)
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
@@ -285,7 +458,7 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 </div>
 ```
 
-### Snippet 2.C: Funding Source Radio Buttons from Enum
+### Snippet 3.C: Funding Source Radio Buttons from Enum
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
@@ -315,7 +488,7 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 </fieldset>
 ```
 
-### Snippet 2.D: Proposed Supervisor `<select>` Dropdown
+### Snippet 3.D: Proposed Supervisor `<select>` Dropdown
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
@@ -350,9 +523,9 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 
 ---
 
-## Part 3 – Labels, Hints (`aria-describedby`) & Live Character Counter
+## Part 4 – Labels, Hints (`aria-describedby`) & Live Character Counter
 
-### Snippet 3.A: Textarea with Hint Text Linked via `aria-describedby`
+### Snippet 4.A: Textarea with Hint Text Linked via `aria-describedby`
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
@@ -391,7 +564,7 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 </div>
 ```
 
-### Snippet 3.B: Accessible Live Character Counter (`aria-live="polite"`)
+### Snippet 4.B: Accessible Live Character Counter (`aria-live="polite"`)
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (inside `@section Scripts`, or handled automatically by `wwwroot/js/site.js`)
 
@@ -425,9 +598,9 @@ And delete the `ApplicationReference` and `SubmittedDate` `<div class="mb-3">` b
 
 ---
 
-## Part 4 – Server-Side Validation Attributes
+## Part 5 – Server-Side Validation Attributes
 
-### Snippet 4.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes
+### Snippet 5.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Models/CreatePhdApplicationViewModel.cs`
 
@@ -487,7 +660,7 @@ public class CreatePhdApplicationViewModel
 }
 ```
 
-### Snippet 4.B: Adding Display Names to `FundingType.cs`
+### Snippet 5.B: Adding Display Names to `FundingType.cs`
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Models/FundingType.cs`
 
@@ -514,9 +687,9 @@ public enum FundingType
 
 ---
 
-## Part 5 – Accessible Error Summary & Inline Error Messages
+## Part 6 – Accessible Error Summary & Inline Error Messages
 
-### Snippet 5.A: Focusable Error Summary with Anchor Links to Fields
+### Snippet 6.A: Focusable Error Summary with Anchor Links to Fields
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (place right above `<form>`)
 
@@ -561,7 +734,7 @@ public enum FundingType
 }
 ```
 
-### Snippet 5.B: Inline Error Message with `aria-invalid` and `aria-describedby`
+### Snippet 6.B: Inline Error Message with `aria-invalid` and `aria-describedby`
 
 When a specific field has a validation error, linking its error `<span>` in `aria-describedby` and setting `aria-invalid="true"` ensures screen readers announce the error immediately when the user focuses the input:
 
@@ -592,9 +765,9 @@ When a specific field has a validation error, linking its error `<span>` in `ari
 
 ---
 
-## Part 6 – Client-Side Validation (Native HTML5 Constraints)
+## Part 7 – Client-Side Validation (Native HTML5 Constraints)
 
-### Snippet 6.A: Adding HTML5 Validation Attributes in `Create.cshtml`
+### Snippet 7.A: Adding HTML5 Validation Attributes in `Create.cshtml`
 
 Client-side validation in this application uses native HTML5 constraint attributes only (no jQuery or JavaScript validation libraries):
 
@@ -608,7 +781,7 @@ Client-side validation in this application uses native HTML5 constraint attribut
    - `ProposedThesisTitle`: `required maxlength="300"`
    - `ResearchSummary` (`<textarea>`): `maxlength="2000"` (leave `required` off because this field is optional)
    - `FundingSource` (radio buttons): `required`
-2. Keep `formnovalidate` on the **"Save as draft and return later"** submit button (in Part 7) so applicants can save partial progress without being blocked by browser constraint validation.
+2. Keep `formnovalidate` on the **"Save as draft and return later"** submit button (in Part 8) so applicants can save partial progress without being blocked by browser constraint validation.
 
 ```cshtml
 <input asp-for="FirstName"
@@ -621,13 +794,13 @@ Client-side validation in this application uses native HTML5 constraint attribut
 
 ---
 
-## Part 7 – Sectioned Form with "Save and Return Later"
+## Part 8 (Optional Stretch Goal) – Sectioned Form with "Save and Return Later"
 
-To keep Part 7 straightforward and manageable, you can implement **Save and Return Later** in two easy pieces:
+To keep this optional stretch goal straightforward and manageable, you can implement **Save and Return Later** and **Multi-Step Sections** in two independent pieces:
 1. Allow an application to be saved in a `Draft` state (even if some sections are still blank).
-2. Split the form UI into 4 step panels (or step pages) with a **"Save as draft and return later"** button alongside **"Submit application"**.
+2. Split the form UI into 4 navigable step panels with a **"Save as draft and return later"** button alongside **"Submit application"**.
 
-### Snippet 7.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts
+### Snippet 8.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts
 
 In `Modules/PhdApplications/Models/ApplicationStatus.cs`, add `Draft` as the first enum value:
 
@@ -646,14 +819,14 @@ public enum ApplicationStatus
 }
 ```
 
-### Snippet 7.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)
+### Snippet 8.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)
 
 If you want to allow saving a partial draft before all fields are filled in, relax `.IsRequired()` on the non-key columns in `ConfigurePhdApplications` (or store empty strings `""` for not-yet-completed text fields so no schema migration is even required!).
 
 > **Shortcut Hint (Zero-Migration Option):**
 > If you default uncompleted draft strings to `string.Empty` (`""`) when saving a draft, you only need to add `Draft` to `ApplicationStatus`—because `Status` is stored as a `TEXT` string in SQLite, **no database migration is required**!
 
-### Snippet 7.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`
+### Snippet 8.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Services/PhdApplicationService.cs`
 
@@ -680,7 +853,7 @@ public async Task<ApplicationOutcome> SaveDraftApplicationAsync(
 }
 ```
 
-### Snippet 7.D: Dual Submit Buttons ("Submit" vs "Save and return later")
+### Snippet 8.D: Dual Submit Buttons ("Submit" vs "Save and return later")
 
 **In `Views/PhdApplications/Create.cshtml`:**
 Replace the single Create button with two buttons sharing `name="command"`:
@@ -764,13 +937,13 @@ public async Task<IActionResult> Create(
             nameof(Details),
             new { applicationReference = application.ApplicationReference });
     }
-    // ... handle errors as in Snippet 1.B
+    // ... handle errors as in Snippet 2.B
 }
 ```
 
-### Snippet 7.E: Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels
+### Snippet 8.E (Optional Stretch Goal): Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels
 
-If you want to split the long form on `Create.cshtml` into 4 navigable step panels with Previous / Next buttons (while keeping all fields in the DOM so progressive enhancement works with or without JS):
+If you want to split the long form on `Create.cshtml` into 4 navigable step panels (while keeping all fields in the DOM so progressive enhancement works with or without JS):
 
 ```cshtml
 <nav aria-label="Application sections" class="mb-4">
@@ -825,9 +998,9 @@ If you want to split the long form on `Create.cshtml` into 4 navigable step pane
 
 ---
 
-## Part 8 – Improving `EditStatus.cshtml` (Admissions Decision Form)
+## Part 9 – Improving `EditStatus.cshtml` (Admissions Decision Form)
 
-### Snippet 8.A: Controller & View for Allowed Status Transitions
+### Snippet 9.A: Controller & View for Allowed Status Transitions
 
 **1. In `PhdApplicationsController.cs` (`EditStatus` GET & POST):**
 Populate `ViewBag.AllowedTransitions` using the helper already provided on `_phdApplicationService`:
@@ -859,7 +1032,19 @@ public async Task<IActionResult> EditStatus(
     return View(application);
 }
 ```
-*(Remember to also set `ViewBag.AllowedTransitions = _phdApplicationService.GetAllowedTransitions(application.Status);` before any `return View(application);` in the `[HttpPost] EditStatus` action!)*
+*(Remember to also set `ViewBag.AllowedTransitions = _phdApplicationService.GetAllowedTransitions(application.Status);` before any `return View(application);` in the `[HttpPost] EditStatus` action, and set `TempData["SuccessMessage"]` before redirecting on success!)*
+
+```csharp
+if (outcome == ApplicationOutcome.Updated)
+{
+    TempData["SuccessMessage"] =
+        $"Application {applicationReference} status updated to {status}.";
+
+    return RedirectToAction(
+        nameof(Details),
+        new { applicationReference });
+}
+```
 
 **2. In `Views/PhdApplications/EditStatus.cshtml`:**
 
@@ -942,9 +1127,9 @@ else
 
 ---
 
-## Part 9 – Improving `Index.cshtml` (Table Accessibility & Filter)
+## Part 10 – Improving `Index.cshtml` (Table Accessibility & Filter)
 
-### Snippet 9.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links
+### Snippet 10.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Index.cshtml`
 

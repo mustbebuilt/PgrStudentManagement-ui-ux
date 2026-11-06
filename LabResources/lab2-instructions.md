@@ -1,10 +1,10 @@
-# Lab 2: Pre vs. Post Usability & Accessibility Testing (`PhdApplications`)
+# Lab 2: Usability & Accessibility Testing Across Branches (`main` vs. `ui-ux-improvements`)
 
 ## Learning Objectives
 
-In [lab1-instructions.md](./lab1-instructions.md), you redesigned the **PhD Applications** forms (`Create.cshtml` and `EditStatus.cshtml`) to improve user experience, semantic HTML structure, validation recovery, and WCAG 2.2 AA accessibility.
+In [lab1-instructions.md](./lab1-instructions.md), you created a new Git branch (`ui-ux-improvements`) and redesigned the **PhD Applications** forms (`Create.cshtml` and `EditStatus.cshtml`) to improve user experience, semantic HTML structure, validation recovery, and WCAG 2.2 AA accessibility.
 
-In this second lab, you will **measure and verify** the impact of your improvements by comparing your untouched **"Pre"** copy against your improved **"Post"** copy using four complementary testing methods:
+In this second lab, you will **measure and verify** the impact of your improvements by testing the untouched **`main` branch** against your **`ui-ux-improvements` branch** using four complementary testing methods:
 
 1. **5-Minute Peer Guerrilla Usability Test** — observing real human friction, completion time, and error rates.
 2. **Browser DevTools Inspection** — inspecting the **Accessibility Tree**, running **Lighthouse** audits, and emulating visual impairments and 400% zoom reflow.
@@ -13,36 +13,40 @@ In this second lab, you will **measure and verify** the impact of your improveme
 
 ---
 
-## Before You Start: Running "Pre" and "Post" Side-by-Side
+## Before You Start: Testing Against `main` and `ui-ux-improvements`
 
-In Lab 1, you cloned two separate folders from your fork of `https://github.com/mustbebuilt/PgrStudentManagement-ui-ux`:
+Make sure all of your Lab 1 changes are committed on your `ui-ux-improvements` branch (`git status` should report a clean working tree).
 
-- `PgrStudentManagement-ui-ux-pre` — the untouched baseline starter project
-- `PgrStudentManagement-ui-ux-post` — your improved project from Lab 1
+You can test the two branches in either of two ways:
 
-You can run both copies simultaneously on different local ports so you can test them side-by-side.
+### Workflow A: Switch Branches in Place (Single Server on Port `5277`)
 
-### 1. Start the "Pre" Application on Port `5277`
-
-Open a terminal window in your **Pre** folder and run:
+Run your tests first on `main`, then switch to `ui-ux-improvements` and re-run them on the same port (`http://localhost:5277`):
 
 ```bash
-cd PgrStudentManagement-ui-ux-pre
+# 1. Test the untouched baseline on main
+git switch main
+dotnet run --project PgrStudentManagement.Web --urls "http://localhost:5277"
+
+# 2. Stop the server (Ctrl+C), switch to your improved branch, and run again
+git switch ui-ux-improvements
 dotnet run --project PgrStudentManagement.Web --urls "http://localhost:5277"
 ```
 
-Verify you can open `http://localhost:5277/PhdApplications/Create` in your browser.
+### Workflow B (Optional): Run Both Branches Simultaneously with `git worktree`
 
-### 2. Start the "Post" Application on Port `5278`
-
-Open a **second** terminal window in your **Post** folder and run:
+If you want both `main` (`:5277`) and `ui-ux-improvements` (`:5278`) running at the same time in side-by-side browser tabs without cloning the repository twice, you can check out `main` into a temporary worktree folder:
 
 ```bash
-cd PgrStudentManagement-ui-ux-post
+# Terminal 1: Start main on port 5277 via a Git worktree
+git worktree add ../pgr-main main
+dotnet run --project ../pgr-main/PgrStudentManagement.Web --urls "http://localhost:5277"
+
+# Terminal 2: Start ui-ux-improvements on port 5278 in your main working directory
+git switch ui-ux-improvements
 dotnet run --project PgrStudentManagement.Web --urls "http://localhost:5278"
 ```
-
-Verify you can open `http://localhost:5278/PhdApplications/Create` in a second browser tab.
+*(When finished with the lab, remove the temporary worktree with `git worktree remove ../pgr-main`.)*
 
 ---
 
@@ -53,27 +57,27 @@ Automated tools can verify technical accessibility rules, but they cannot tell y
 ### How to Run the Test
 
 1. Pair up with another student.
-2. Ask your partner to complete the **User Scenario** below on the **Pre** version (`http://localhost:5277/PhdApplications/Create`) first, thinking aloud as they go.
+2. Ask your partner to complete the **User Scenario** below on the **`main` branch** (`/PhdApplications/Create`) first, thinking aloud as they go.
 3. **Do not give hints** (for example, do not tell them what values `FundingType` expects or where to find a Supervisor's staff number). Only step in if they are completely stuck for more than 60 seconds.
-4. Repeat the exact same scenario on your **Post** version (`http://localhost:5278/PhdApplications/Create`).
+4. Repeat the exact same scenario on your **`ui-ux-improvements` branch** (`/PhdApplications/Create`).
 
 ### User Scenario Script
 
 > *"Imagine you are **Alex Morgan** (`alex.morgan@example.ac.uk`). You want to apply for a **Part-time** PhD in **Computing (`PHD-COMP`)** starting on **1 October 2027**, funded by a **University studentship**, supervised by **Robin Carter**, with the working thesis title **'Automated Accessibility Testing in Higher Education Portals'** and a short research summary.*
 >
-> *1. Start filling out the application and save a draft after entering your personal details.*
+> *1. (If you completed the Part 8 stretch goal) Start filling out the application and save a draft after entering your personal details.*
 > *2. Complete and submit the full application.*
 > *3. Finally, act as an Admissions Tutor and update your application status to **Under Review**."*
 
 ### Record Your Observations
 
-| Metric | Pre (`:5277`) | Post (`:5278`) |
+| Metric | `main` Branch | `ui-ux-improvements` Branch |
 |---|---|---|
 | **Time to complete task (seconds)** | | |
 | **Number of times user asked "What do I put here?"** | | |
 | **Number of failed form submissions** | | |
 | **Did the user have to leave the page to look up an ID or code?** | | |
-| **Was the user able to save partial progress and return?** | | |
+| **Was the user able to save partial progress and return? *(Optional Part 8)*** | | |
 | **Subjective Cognitive Load (1 = effortless, 5 = frustrating)** | | |
 
 ---
@@ -86,13 +90,14 @@ Modern browsers compile the HTML DOM into an **Accessibility Tree** that screen 
 
 1. Open Chrome or Edge DevTools (`F12` or `Cmd+Opt+I` / `Ctrl+Shift+I`).
 2. In the **Elements** panel, open the secondary sidebar (`Computed` / `Layout` / **Accessibility**) and select **Accessibility**, then check **Enable full-page accessibility tree** (or inspect individual inputs).
-3. Inspect the **`ModeOfStudy` (Mode of study)** and **`ProposedSupervisorStaffNumber` (Proposed main supervisor)** controls on both versions and compare what the browser reports:
+3. Inspect the **`ModeOfStudy` (Mode of study)** and **`ProposedSupervisorStaffNumber` (Proposed main supervisor)** controls on both `main` and `ui-ux-improvements` and compare what the browser reports:
 
-| Property in Accessibility Tree | Pre (`:5277`) | Post (`:5278`) |
+| Property in Accessibility Tree | `main` Branch | `ui-ux-improvements` Branch |
 |---|---|---|
+| **`FirstName` Computed Name** | `""` *(empty — `<span>` is not a `<label>`)* | `"First name"` (via `<label for="FirstName">`) |
 | **`ModeOfStudy` Role** | `textbox` | `radio` inside `group` (`"Mode of study"`) |
 | **`ProposedSupervisorStaffNumber` Role** | `textbox` | `combobox` with named `<option>` items |
-| **`ApplicationReference` Computed Name** | `"ApplicationReference"` (CamelCase) | *(auto-generated on server; removed from form)* |
+| **`ApplicationReference` Computed Name** | `""` *(unlabelled system field exposed to user)* | *(auto-generated on server; removed from form)* |
 | **`Description` (`aria-describedby`)** | *(empty)* | Format hint + error message when invalid |
 | **`Invalid` state on empty submit** | `false` (silent failure) | `true` (native HTML5 `:invalid` / `aria-invalid="true"`) |
 
@@ -100,8 +105,8 @@ Modern browsers compile the HTML DOM into an **Accessibility Tree** that screen 
 
 1. In Chrome DevTools, open the **Lighthouse** tab.
 2. Select **Mode: Navigation**, **Device: Desktop**, and check **Categories: Accessibility**.
-3. Run the audit on `http://localhost:5277/PhdApplications/Create` (**Pre**) and `http://localhost:5278/PhdApplications/Create` (**Post**).
-4. Also trigger a failed form submission on **Post** and run a **Snapshot** audit in Lighthouse to verify that error states maintain sufficient colour contrast and valid ARIA attributes.
+3. Run the audit on `/PhdApplications/Create` on the **`main` branch** and on the **`ui-ux-improvements` branch**.
+4. Also trigger a failed form submission on **`ui-ux-improvements`** and run a **Snapshot** audit in Lighthouse to verify that error states maintain sufficient colour contrast and valid ARIA attributes. *(All portal theme, button, and alert colours are defined as CSS custom properties in `:root` at the top of `PgrStudentManagement.Web/wwwroot/css/site.css`—you can adjust `--theme-*`, `--btn-*`, and `--status-*` variables there if you want to experiment with colour contrast ratios).*
 
 ### 2.3 Vision Deficiency Emulation & 400% Reflow (WCAG 1.4.1 & 1.4.10)
 
@@ -116,7 +121,7 @@ Modern browsers compile the HTML DOM into an **Accessibility Tree** that screen 
 
 ## Part 3: Visual Keyboard & Tab-Stop Auditing (Accessibility Insights for Web)
 
-One of the clearest ways to see the difference between the **Pre** and **Post** forms is to trace the keyboard `Tab` path visually.
+One of the clearest ways to see the difference between the **`main`** and **`ui-ux-improvements`** branches is to trace the keyboard `Tab` path visually.
 
 ### 3.1 Install Accessibility Insights for Web
 
@@ -125,18 +130,18 @@ One of the clearest ways to see the difference between the **Pre** and **Post** 
 
 ### 3.2 Run Automated Checks
 
-1. Run **FastPass → Automated Checks** on `http://localhost:5277/PhdApplications/Create` and `http://localhost:5278/PhdApplications/Create`.
+1. Run **FastPass → Automated Checks** on `/PhdApplications/Create` on both **`main`** and **`ui-ux-improvements`**.
 2. Note any violations flagged directly on the page.
 
 ### 3.3 Record Visual Tab Stops
 
 1. In the FastPass window, select **Tab Stops** and toggle **Show tab stops** to **On**.
-2. Click the address bar, then press `Tab` repeatedly through the entire `Create` form on **Pre** (`:5277`) and then on **Post** (`:5278`).
-3. The tool draws numbered circles (`1`, `2`, `3`…) connected by lines showing the exact focus trajectory. Compare both versions:
+2. Click the address bar, then press `Tab` repeatedly through the entire `Create` form on **`main`** and then on **`ui-ux-improvements`**.
+3. The tool draws numbered circles (`1`, `2`, `3`…) connected by lines showing the exact focus trajectory. Compare both branches:
    - **Focus visibility**: Is the `:focus-visible` outline clearly visible on every control?
-   - **Radio button behaviour**: On **Post**, pressing `Tab` moves into the `<fieldset>` radio group once, and arrow keys switch between choices.
-   - **Error recovery**: Submit an empty form on **Post** and press `Tab` once from the Error Summary — does clicking an error link jump keyboard focus directly into the offending input?
-4. Take a screenshot of the **Tab Stops** overlay on both **Pre** and **Post** to include in your lab reflection.
+   - **Radio button behaviour**: On **`ui-ux-improvements`**, pressing `Tab` moves into the `<fieldset>` radio group once, and arrow keys switch between choices.
+   - **Error recovery**: Submit an empty form on **`ui-ux-improvements`** and press `Tab` once from the Error Summary — does clicking an error link jump keyboard focus directly into the offending input?
+4. Take a screenshot of the **Tab Stops** overlay on both **`main`** and **`ui-ux-improvements`** to include in your lab reflection.
 
 ---
 
@@ -144,10 +149,10 @@ One of the clearest ways to see the difference between the **Pre** and **Post** 
 
 Why use **Playwright** for UI/UX and accessibility testing?
 
-Playwright encourages writing tests that locate elements the exact same way a human or screen reader user does: by **visible label** (`page.getByLabel('First name')`) and by **semantic role** (`page.getByRole('radio', { name: 'Full-Time (3–4 years)' })`) rather than brittle CSS selectors (`#FirstName`).
+Playwright encourages writing tests that locate elements the exact same way a human or screen reader user does: by **visible label** (`page.getByLabel('First name')`) and by **semantic role** (`page.getByRole('radio', { name: 'Full-time (typically 3 years)' })`) rather than brittle CSS selectors (`#FirstName`).
 
 Because of this:
-- A test written from a **human user's perspective** will naturally **fail** on the poorly designed **Pre** form (where labels are CamelCase property names and every control is a plain text box) and **pass** on your improved **Post** form!
+- A test written from a **human user's perspective** will naturally **fail** on the poorly designed **`main` branch** form (where labels are CamelCase property names and every control is a plain text box) and **pass** on your **`ui-ux-improvements` branch**!
 - Combining Playwright with **`@axe-core/playwright`** gives you automated WCAG 2.2 AA auditing across multi-step states and validation error states.
 
 Below you can choose **Option A (Node.js / TypeScript — recommended for Playwright's interactive `--ui` runner)** or **Option B (.NET / C# xUnit)**.
@@ -158,9 +163,10 @@ Below you can choose **Option A (Node.js / TypeScript — recommended for Playwr
 
 #### Step 1: Initialise a Playwright Test Folder
 
-Create a dedicated `ui-ux-tests` folder alongside your `pre` and `post` folders:
+Create a dedicated `ui-ux-tests` folder outside your repository (so switching branches in `PgrStudentManagement-ui-ux` never overwrites your test files):
 
 ```bash
+cd ..
 mkdir ui-ux-tests
 cd ui-ux-tests
 npm init -y
@@ -170,7 +176,7 @@ npx playwright install chromium
 
 #### Step 2: Create `playwright.config.ts`
 
-Create a file named `playwright.config.ts` in `ui-ux-tests` so you can switch between testing your **Pre** server (`:5277`) and your **Post** server (`:5278`) using an environment variable:
+Create a file named `playwright.config.ts` in `ui-ux-tests`:
 
 ```typescript
 import { defineConfig } from '@playwright/test';
@@ -179,15 +185,15 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30000,
   use: {
-    // Defaults to Post (:5278), or override with BASE_URL=http://localhost:5277
-    baseURL: process.env.BASE_URL || 'http://localhost:5278',
+    // Defaults to http://localhost:5277, or override with BASE_URL=http://localhost:5278
+    baseURL: process.env.BASE_URL || 'http://localhost:5277',
     headless: true,
     viewport: { width: 1280, height: 800 },
   },
 });
 ```
 
-#### Step 3: Create the Pre vs. Post Usability & Accessibility Test Suite
+#### Step 3: Create the Usability & Accessibility Test Suite
 
 Create `tests/phd-applications-ux.spec.ts` inside `ui-ux-tests`:
 
@@ -201,8 +207,8 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     await page.goto('/PhdApplications/Create');
 
     // A user (or screen reader) looks for "First name", "Last name", "Email address"
-    // PRE FAILS: Labels are raw C# property names ("FirstName", "LastName", "EmailAddress")
-    // POST PASSES: Labels use human-readable text and native HTML5 validation attributes
+    // MAIN FAILS: Field prompts use <span> instead of <label> and raw C# property names ("FirstName", "LastName", "EmailAddress")
+    // UI-UX-IMPROVEMENTS PASSES: Controls use <label for="..."> with human-readable text and native HTML5 validation attributes
     const firstName = page.getByLabel('First name');
     const lastName = page.getByLabel('Last name');
     const email = page.getByLabel('Email address');
@@ -225,8 +231,8 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
       await step2Btn.click();
     }
 
-    // PRE FAILS: ModeOfStudy and ProposedSupervisorStaffNumber are generic role="textbox" inputs
-    // POST PASSES: Mode of study is a fieldset radio group and Supervisor is a combobox
+    // MAIN FAILS: ModeOfStudy and ProposedSupervisorStaffNumber are generic role="textbox" inputs
+    // UI-UX-IMPROVEMENTS PASSES: Mode of study is a fieldset radio group and Supervisor is a combobox
     const studyModeGroup = page.getByRole('group', { name: /Mode of study/i });
     await expect(studyModeGroup).toBeVisible();
     await expect(studyModeGroup.getByRole('radio')).toHaveCount(2);
@@ -256,8 +262,8 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     const submitBtn = page.getByRole('button', { name: /Submit application|Create/i }).first();
     await submitBtn.click();
 
-    // PRE FAILS: Page reloads silently with no alert, no title change, and no aria-invalid
-    // POST PASSES:
+    // MAIN FAILS: Page reloads silently with no alert, no title change, and no aria-invalid
+    // UI-UX-IMPROVEMENTS PASSES:
     // a) Page <title> is prefixed with "Error:" for screen reader announcement (WCAG 3.3.1)
     await expect(page).toHaveTitle(/^Error:/);
 
@@ -278,10 +284,10 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     }
   });
 
-  test('4. Live Feedback & Task-Saving: Character counter updates and Save Draft works with partial data', async ({ page }) => {
+  test('4. Live Feedback & Task-Saving: Character counter updates (and Save Draft works if Part 8 stretch goal is implemented)', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
-    // Navigate to Step 3 if using multi-step panels
+    // Navigate to Step 3 if using the optional multi-step panels
     const step3Btn = page.getByRole('button', { name: /3\. Proposal/i });
     if (await step3Btn.isVisible()) {
       await step3Btn.click();
@@ -293,22 +299,21 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     const counter = page.locator('#ResearchSummary-count');
     await expect(counter).toContainText(/remaining/i);
 
-    // Navigate back to Step 1 if needed, enter minimal details, and Save as Draft
-    const step1Btn = page.getByRole('button', { name: /1\. About you/i });
-    if (await step1Btn.isVisible()) {
-      await step1Btn.click();
-    }
-
-    await page.getByLabel('First name').fill('Alex');
-    await page.getByLabel('Last name').fill('Morgan');
-    await page.getByLabel('Email address').fill('alex.morgan@example.ac.uk');
-
+    // If the optional Part 8 "Save as draft" stretch goal was implemented, verify draft saving
     const saveDraftBtn = page.getByRole('button', { name: /Save as draft/i });
-    await expect(saveDraftBtn).toBeVisible();
-    await saveDraftBtn.click();
+    if (await saveDraftBtn.isVisible()) {
+      const step1Btn = page.getByRole('button', { name: /1\. About you/i });
+      if (await step1Btn.isVisible()) {
+        await step1Btn.click();
+      }
 
-    // Should redirect to Details or Index with Draft status saved
-    await expect(page).toHaveURL(/\/PhdApplications\/(Details|Index)/);
+      await page.getByLabel('First name').fill('Alex');
+      await page.getByLabel('Last name').fill('Morgan');
+      await page.getByLabel('Email address').fill('alex.morgan@example.ac.uk');
+
+      await saveDraftBtn.click();
+      await expect(page).toHaveURL(/\/PhdApplications\/(Details|Index)/);
+    }
   });
 
   test('5. Automated WCAG 2.2 AA Audit (axe-core)', async ({ page }) => {
@@ -323,20 +328,22 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
 });
 ```
 
-#### Step 4: Run the Tests Against "Pre" vs. "Post"
+#### Step 4: Run the Tests Against `main` vs. `ui-ux-improvements`
 
-1. **Run against your untouched "Pre" server (`:5277`)**:
+1. **Test the `main` branch**:
+   With the web server running on `main` (`git switch main && dotnet run --project PgrStudentManagement.Web --urls "http://localhost:5277"`):
 
    ```bash
-   BASE_URL=http://localhost:5277 npx playwright test
+   npx playwright test
    ```
 
-   Observe how tests 1–4 fail because the starter form lacks human-readable labels, semantic radio/select roles, an error summary, `aria-invalid` attributes, and draft saving.
+   Observe how tests 1–5 fail on `main` because the starter form uses `<span>` tags instead of `<label>` elements and has low colour contrast on the `Create` button (`#7cb8eb` on `#ffffff`, failing both `label` and `color-contrast` in Test 5) and lacks human-readable labels, semantic radio/select roles, an error summary, and `aria-invalid` attributes (Tests 1–4).
 
-2. **Run against your improved "Post" server (`:5278`)**:
+2. **Test the `ui-ux-improvements` branch**:
+   Switch the web server to your `ui-ux-improvements` branch (`git switch ui-ux-improvements && dotnet run --project PgrStudentManagement.Web --urls "http://localhost:5277"`):
 
    ```bash
-   BASE_URL=http://localhost:5278 npx playwright test
+   npx playwright test
    ```
 
    Verify that all 5 tests pass!
@@ -344,7 +351,7 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
 3. **Explore interactively with Playwright UI Mode**:
 
    ```bash
-   BASE_URL=http://localhost:5278 npx playwright test --ui
+   npx playwright test --ui
    ```
 
    In Playwright UI Mode, click through each step on the timeline and inspect the DOM snapshot and accessibility locators at every millisecond of the test.
@@ -353,11 +360,12 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
 
 ### Option B: Playwright for .NET (C# / xUnit)
 
-If you prefer to write your automated tests in C# alongside the ASP.NET Core project:
+If you prefer to write your automated tests in C#:
 
 #### Step 1: Create an xUnit Test Project
 
 ```bash
+cd ..
 mkdir PgrStudentManagement.UiTests
 cd PgrStudentManagement.UiTests
 dotnet new xunit
@@ -385,7 +393,7 @@ public class PhdApplicationUxTests : IAsyncLifetime
     private IPlaywright _playwright = null!;
     private IBrowser _browser = null!;
     private readonly string _baseUrl =
-        Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5278";
+        Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5277";
 
     public async Task InitializeAsync()
     {
@@ -441,23 +449,23 @@ public class PhdApplicationUxTests : IAsyncLifetime
 }
 ```
 
-#### Step 3: Run Against "Pre" and "Post"
+#### Step 3: Run Against `main` and `ui-ux-improvements`
 
 ```bash
-# Test against Pre (:5277)
-BASE_URL=http://localhost:5277 dotnet test
+# 1. With the server running on the main branch:
+dotnet test
 
-# Test against Post (:5278)
-BASE_URL=http://localhost:5278 dotnet test
+# 2. Switch the server to ui-ux-improvements (or pass BASE_URL if using git worktree):
+dotnet test
 ```
 
 ---
 
-## Part 5: Pre vs. Post Scorecard & Reflection
+## Part 5: Branch Comparison Scorecard & Reflection
 
-Complete the summary table below comparing your findings across all four testing approaches:
+Complete the summary table below comparing your findings across all four testing approaches between `main` and `ui-ux-improvements`:
 
-| Evaluation Dimension | Tool / Method Used | Pre (`:5277`) Result | Post (`:5278`) Result | Key WCAG 2.2 Criterion |
+| Evaluation Dimension | Tool / Method Used | `main` Branch Result | `ui-ux-improvements` Branch Result | Key WCAG 2.2 Criterion |
 |---|---|---|---|---|
 | **Human Task Completion Time** | Part 1: Peer Guerrilla Test | | | — |
 | **User Confusion / Lookup Errors** | Part 1: Peer Guerrilla Test | | | **3.3.2** Labels or Instructions |
@@ -470,7 +478,6 @@ Complete the summary table below comparing your findings across all four testing
 
 ### Reflection Questions
 
-1. **Automated vs. Manual Detection**: Why did Lighthouse and `axe-core` give the **Pre** version a relatively high score despite the form being almost unusable for a human (requiring raw staff numbers like `AS1001` and exact enum strings)? What does this tell you about relying solely on automated accessibility scanners?
-2. **Playwright Locators as UX Tests**: How did writing Playwright tests with `getByLabel` and `getByRole` expose usability flaws that a CSS selector test (`page.locator('#ProposedSupervisorStaffNumber')`) would have missed?
-3. **Error Recovery**: How did combining native HTML5 validation constraints (`required`, `maxlength`, `type="email"`) with the server-side focusable `#error-summary[role="alert"]`, the `Error:` page `<title>` prefix, and `aria-invalid="true"` change the experience for a keyboard-only or screen-reader user when submitting an incomplete form?
-
+1. **Automated vs. Manual Detection**: Why did Lighthouse and `axe-core` immediately flag the missing `<label>` tags and the low-contrast `Create` button (`#7cb8eb` vs `#ffffff`, `2.12:1`) on the **`main` branch**, yet after you completed **Part 1** (`Snippet 1.A` & `1.B`), `axe-core` would pass the form even before you fixed the deeper UX problems (requiring raw staff numbers like `AS1001` and exact enum strings)? What does this tell you about relying solely on automated accessibility scanners?
+2. **Playwright Locators as UX Tests**: How did writing Playwright tests with `getByLabel` and `getByRole` expose usability flaws on `main` that a CSS selector test (`page.locator('#ProposedSupervisorStaffNumber')`) would have missed?
+3. **Error Recovery**: How did combining native HTML5 validation constraints (`required`, `maxlength`, `type="email"`) with the server-side focusable `#error-summary[role="alert"]`, the `Error:` page `<title>` prefix, and `aria-invalid="true"` on the `ui-ux-improvements` branch change the experience for a keyboard-only or screen-reader user when submitting an incomplete form?

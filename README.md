@@ -48,13 +48,13 @@ PgrStudentManagement.Web/Modules/
 
 ### 4. Research Activities Module ([`Modules/ResearchActivities`](./PgrStudentManagement.Web/Modules/ResearchActivities))
 - Tracks student research activities, conference presentations, published papers, and research milestones.
-- **Persistence**: Document store in **MongoDB** (`StudentManagement.ResearchActivities` collection), demonstrating polyglot persistence alongside SQLite.
+- **Persistence**: Stubbed from a static JSON file ([`Modules/ResearchActivities/Data/research-activities.json`](./PgrStudentManagement.Web/Modules/ResearchActivities/Data/research-activities.json)).
 
 ---
 
-## Database Architecture & Polyglot Persistence
+## Database Architecture & Persistence
 
-The application employs a polyglot persistence strategy suited to differing data models: **SQLite** for relational domain models with foreign keys, and **MongoDB** for flexible research activity documents.
+The application uses **SQLite** for relational domain models with foreign keys, and a static JSON file for stubbed research activity documents.
 
 ### 1. SQLite Relational Database (`student-management.db`)
 - **Location**: Local file `PgrStudentManagement.Web/student-management.db` (configured in `appsettings.json`).
@@ -73,19 +73,9 @@ The application employs a polyglot persistence strategy suited to differing data
   dotnet ef database update --project PgrStudentManagement.Web
   ```
 
-### 2. MongoDB Document Database (`StudentManagement`)
-- **Connection**: `mongodb://localhost:27017` (configured in `appsettings.json`).
-- **Collection**: `StudentManagement.ResearchActivities`.
-- **Setup Options**:
-  - **Docker (Recommended)**:
-    ```bash
-    docker run -d --name mongodb -p 27017:27017 mongo:latest
-    ```
-  - **macOS (Homebrew)**:
-    ```bash
-    brew services start mongodb-community
-    ```
-- **Automatic Initialization**: On startup, `ResearchActivityDataSeeder.SeedAsync` checks if the collection is empty and populates sample documents.
+### 2. Static JSON Research Activities (`research-activities.json`)
+- **Location**: `PgrStudentManagement.Web/Modules/ResearchActivities/Data/research-activities.json` (configured in `appsettings.json` under `ResearchActivityData:FilePath`).
+- **Zero External Services**: Requires no external database server to run or test.
 
 ---
 
@@ -98,7 +88,7 @@ dotnet build
 ```
 
 ### 2. Run the Web Project
-Ensure your local MongoDB instance is running, then launch the web application:
+Launch the web application:
 ```bash
 dotnet run --project PgrStudentManagement.Web
 ```
@@ -113,14 +103,14 @@ By default, the application listens on:
 
 ### 3. Application Startup Sequence
 When [PgrStudentManagement.Web/Program.cs](PgrStudentManagement.Web/Program.cs) executes:
-1. **Service Registration**: Registers MVC controllers, EF Core SQLite `DbContext`, MongoDB client, DAOs, repositories, and cross-module services (`IStudentLookup`, `ISupervisorLookup`).
+1. **Service Registration**: Registers MVC controllers, EF Core SQLite `DbContext`, DAOs, repositories, and cross-module services (`IStudentLookup`, `ISupervisorLookup`).
 2. **Database Migration**: Automatically applies pending EF Core migrations (`await context.Database.MigrateAsync()`).
 3. **Ordered Data Seeding**:
    - `StudentDataSeeder` (Students)
    - `EnrolmentDataSeeder` (Enrolments referencing `StudentNumber`)
    - `AcademicSupervisorDataSeeder` (Supervisors and supervisory assignments)
    - `PhdApplicationDataSeeder` (PhD applications referencing supervisors and students)
-   - `ResearchActivityDataSeeder` (MongoDB activity documents)
+   - `ResearchActivityDataSeeder` (Research activity records)
 4. **Endpoint Routing**: Maps controllers and static asset endpoints.
 
 ### 4. Running the Tests
@@ -133,25 +123,27 @@ dotnet test
 
 ## Lab Resources: UI / UX and Accessibility
 
-This project includes a two-part hands-on lab sequence focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC, followed by Pre vs. Post usability and accessibility evaluation:
+This project includes a two-part hands-on lab sequence focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC, followed by branch-vs-branch usability and accessibility evaluation:
 
 - **Lab 1 — UI/UX & Accessibility Implementation**: [`LabResources/lab1-instructions.md`](./LabResources/lab1-instructions.md)
-  - **Repository Setup**: Forking and cloning two copies of the starter repository (`PgrStudentManagement-ui-ux-pre` for baseline testing and `PgrStudentManagement-ui-ux-post` for implementing improvements).
+  - **Branch Setup**: Creating a dedicated `ui-ux-improvements` Git branch so the `main` branch remains untouched as a baseline for testing.
   - **Part 0**: Usability and accessibility audit of the starter forms.
-  - **Part 1**: Decoupling forms from entities using View Models.
-  - **Part 2**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
-  - **Part 3**: Accessible labels, hint text, grouping (`<fieldset>`/`<legend>`), and character counts.
-  - **Part 4 & 5**: Accessible server-side error validation (error summary, inline messages, focus management).
-  - **Part 6**: Native HTML5 client-side validation (`required`, `maxlength`, `type="email"`, `type="date"`).
-  - **Part 7**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
-  - **Part 8**: Progressive disclosure and error prevention on status decision forms.
-- **Lab 2 — Pre vs. Post Usability & Accessibility Testing**: [`LabResources/lab2-instructions.md`](./LabResources/lab2-instructions.md)
-  - Running the untouched **Pre** (`:5277`) and improved **Post** (`:5278`) copies side-by-side.
+  - **Part 1 (Quick Wins)**: Fixing non-WCAG-compliant button colour contrast (`2.12:1` -> `8.86:1`, WCAG 1.4.3) via `:root` CSS variables in `wwwroot/css/site.css` and replacing `<span>` prompts with semantic `<label asp-for="...">` tags (WCAG 1.3.1 & 4.1.2).
+  - **Part 2**: Minimising user input to prevent errors by decoupling forms from entities using View Models, auto-generating system fields, and providing post-redirect user feedback via `TempData` and `role="status"` (WCAG 4.1.3).
+  - **Part 3**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
+  - **Part 4**: Accessible human-readable display names, hint text (`aria-describedby`), grouping (`<fieldset>`/`<legend>`), and live character counts.
+  - **Part 5 & 6**: Accessible server-side error validation (error summary, inline messages, focus management).
+  - **Part 7**: Native HTML5 client-side validation (`required`, `maxlength`, `type="email"`, `type="date"`).
+  - **Part 8 (Optional Stretch Goal)**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
+  - **Part 9**: Progressive disclosure and error prevention on status decision forms (`EditStatus.cshtml`).
+  - **Part 10 (Optional Bonus)**: Accessible table semantics (`<caption>`, `scope="col"`), filtering, and screen-reader link context (`Index.cshtml`).
+- **Lab 2 — Branch Comparison Usability & Accessibility Testing (`main` vs. `ui-ux-improvements`)**: [`LabResources/lab2-instructions.md`](./LabResources/lab2-instructions.md)
+  - Testing the untouched **`main` branch** against the **`ui-ux-improvements` branch** (either by switching branches with `git switch` or running both concurrently via `git worktree`).
   - **Part 1**: 5-minute Peer Guerrilla Usability Testing with structured task metrics.
   - **Part 2**: Chrome DevTools Accessibility Tree inspection, Lighthouse audits, vision deficiency emulation, and 400% zoom reflow.
   - **Part 3**: Visual keyboard and tab-stop path auditing with **Microsoft Accessibility Insights for Web**.
   - **Part 4**: Automated usability and WCAG 2.2 AA testing with **Playwright** and **axe-core** (`@playwright/test` + `@axe-core/playwright` and .NET xUnit `Microsoft.Playwright` + `Deque.AxeCore.Playwright`).
-  - **Part 5**: Pre vs. Post scorecard and reflection questions.
+  - **Part 5**: Branch comparison scorecard and reflection questions.
 - **Code Snippets & Heavy Hints Companion**: [`LabResources/code-snippets.md`](./LabResources/code-snippets.md)
   - Concrete C# and Razor implementations for `PhdApplicationsController`, `PhdApplication` drafts, `PhdApplicationService` transition checks, and `StudentManagementDbContext` fluent configuration.
 

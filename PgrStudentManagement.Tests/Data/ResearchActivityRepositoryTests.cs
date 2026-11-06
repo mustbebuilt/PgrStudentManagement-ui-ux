@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
 using PgrStudentManagement.Web.Modules.ResearchActivities.Data;
 using PgrStudentManagement.Web.Modules.ResearchActivities.Models;
 using PgrStudentManagement.Web.Modules.ResearchActivities.Services;
@@ -9,46 +8,43 @@ namespace PgrStudentManagement.Tests.Data;
 
 public class ResearchActivityRepositoryTests : IDisposable
 {
-    private readonly IMongoClient _client;
-    private readonly IMongoDatabase _database;
-    private readonly string _collectionName;
+    private readonly string _tempFilePath;
     private readonly ResearchActivityRepository _repository;
     private readonly ResearchActivityService _service;
 
     public ResearchActivityRepositoryTests()
     {
-        var connectionString = "mongodb://localhost:27017";
-        _client = new MongoClient(connectionString);
-        var databaseName = "StudentManagementTest";
-        _database = _client.GetDatabase(databaseName);
-        _collectionName = "ResearchActivities_" + Guid.NewGuid().ToString("N");
+        _tempFilePath = Path.Combine(
+            Path.GetTempPath(),
+            $"research-activities-{Guid.NewGuid():N}.json");
 
         var configValues = new Dictionary<string, string?>
         {
-            ["ResearchActivityDatabase:ConnectionString"] = connectionString,
-            ["ResearchActivityDatabase:DatabaseName"] = databaseName,
-            ["ResearchActivityDatabase:CollectionName"] = _collectionName
+            ["ResearchActivityData:FilePath"] = _tempFilePath
         };
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configValues)
             .Build();
 
-        _repository = new ResearchActivityRepository(_client, configuration);
+        _repository = new ResearchActivityRepository(configuration);
         _service = new ResearchActivityService(_repository);
     }
 
     public void Dispose()
     {
-        _database.DropCollection(_collectionName);
+        if (File.Exists(_tempFilePath))
+        {
+            File.Delete(_tempFilePath);
+        }
     }
 
     [Fact]
-    public async Task DefaultDatabase_ContainsSeededActivities()
+    public async Task DefaultStaticJsonFile_ContainsSeededActivities()
     {
-        var defaultDb = _client.GetDatabase("StudentManagement");
-        var collection = defaultDb.GetCollection<ResearchActivity>("ResearchActivities");
-        var activities = await collection.Find(_ => true).ToListAsync();
+        var defaultRepository = new ResearchActivityRepository();
+        var activities = await defaultRepository.GetAllAsync();
+
         Assert.True(activities.Count >= 3);
         Assert.Contains(activities, a => a.Id == "activity-001" && a.StudentNumber == "S100001");
         Assert.Contains(activities, a => a.Id == "activity-002" && a.StudentNumber == "S100001");

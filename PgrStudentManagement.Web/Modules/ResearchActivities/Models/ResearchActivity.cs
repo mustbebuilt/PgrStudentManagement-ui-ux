@@ -1,16 +1,14 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace PgrStudentManagement.Web.Modules.ResearchActivities.Models;
 
 public class ResearchActivity
 {
-    [BsonId]
     public string Id { get; set; } = string.Empty;
 
     public string StudentNumber { get; set; } = string.Empty;
 
-    [BsonRepresentation(BsonType.String)]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ResearchActivityType ActivityType { get; set; }
 
     public string Title { get; set; } = string.Empty;

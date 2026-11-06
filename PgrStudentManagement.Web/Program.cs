@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 
 using PgrStudentManagement.Web.Modules.Students.Contracts;
 using PgrStudentManagement.Web.Modules.Students.Data;
@@ -30,12 +29,6 @@ builder.Services.AddDbContext<StudentManagementDbContext>(
     options => options.UseSqlite(
         builder.Configuration.GetConnectionString(
             "StudentManagementDatabase")));
-
-// Configure MongoDB persistence.
-builder.Services.AddSingleton<IMongoClient>(
-    _ => new MongoClient(
-        builder.Configuration[
-            "ResearchActivityDatabase:ConnectionString"]));
 
 // Students module.
 builder.Services.AddScoped<StudentDao>();

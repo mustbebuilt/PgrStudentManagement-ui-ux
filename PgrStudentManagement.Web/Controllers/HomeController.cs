@@ -11,6 +11,26 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Progression()
+    {
+        return View();
+    }
+
+    public IActionResult Ethics()
+    {
+        return View();
+    }
+
+    public IActionResult Training()
+    {
+        return View();
+    }
+
+    public IActionResult Reports()
+    {
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();
