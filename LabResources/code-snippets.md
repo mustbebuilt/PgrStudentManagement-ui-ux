@@ -18,27 +18,24 @@ This companion file contains ready-to-adapt code snippets for every part of [`la
   - [Snippet 3.B: Programme `<select>` & Mode of Study Radio Buttons (`<fieldset>`)](#snippet-3b-programme-select--mode-of-study-radio-buttons-fieldset)
   - [Snippet 3.C: Funding Source Radio Buttons from Enum](#snippet-3c-funding-source-radio-buttons-from-enum)
   - [Snippet 3.D: Proposed Supervisor `<select>` Dropdown](#snippet-3d-proposed-supervisor-select-dropdown)
-- [Part 4 – Labels, Hints (`aria-describedby`) & Live Character Counter](#part-4--labels-hints-aria-describedby--live-character-counter)
-  - [Snippet 4.A: Textarea with Hint Text Linked via `aria-describedby`](#snippet-4a-textarea-with-hint-text-linked-via-aria-describedby)
-  - [Snippet 4.B: Accessible Live Character Counter (`aria-live="polite"`)](#snippet-4b-accessible-live-character-counter-aria-livepolite)
-- [Part 5 – Server-Side Validation Attributes](#part-5--server-side-validation-attributes)
-  - [Snippet 5.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes](#snippet-5a-createphdapplicationviewmodelcs-with-validation--display-attributes)
-  - [Snippet 5.B: Adding Display Names to `FundingType.cs`](#snippet-5b-adding-display-names-to-fundingtypecs)
-- [Part 6 – Accessible Error Summary & Inline Error Messages](#part-6--accessible-error-summary--inline-error-messages)
-  - [Snippet 6.A: Focusable Error Summary with Anchor Links to Fields](#snippet-6a-focusable-error-summary-with-anchor-links-to-fields)
-  - [Snippet 6.B: Inline Error Message with `aria-invalid` and `aria-describedby`](#snippet-6b-inline-error-message-with-aria-invalid-and-aria-describedby)
-- [Part 7 – Client-Side Validation (Native HTML5 Constraints)](#part-7--client-side-validation-native-html5-constraints)
-  - [Snippet 7.A: Adding HTML5 Validation Attributes in `Create.cshtml`](#snippet-7a-adding-html5-validation-attributes-in-createcshtml)
-- [Part 8 (Optional Stretch Goal) – Sectioned Form with "Save and Return Later"](#part-8-optional-stretch-goal--sectioned-form-with-save-and-return-later)
-  - [Snippet 8.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts](#snippet-8a-update-applicationstatuscs-and-phdapplicationcs-for-drafts)
-  - [Snippet 8.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)](#snippet-8b-update-studentmanagementdbcontextcs-configurephdapplications)
-  - [Snippet 8.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`](#snippet-8c-add-draft-save--final-submit-methods-to-phdapplicationservicecs)
-  - [Snippet 8.D: Dual Submit Buttons ("Submit" vs "Save and return later")](#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later)
-  - [Snippet 8.E (Optional Stretch Goal): Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels](#snippet-8e-optional-stretch-goal-multi-step-wizard-tabs--sections-with-fieldset-panels)
-- [Part 9 – Improving `EditStatus.cshtml` (Admissions Decision Form)](#part-9--improving-editstatuscshtml-admissions-decision-form)
-  - [Snippet 9.A: Controller & View for Allowed Status Transitions](#snippet-9a-controller--view-for-allowed-status-transitions)
-- [Part 10 – Improving `Index.cshtml` (Table Accessibility & Filter)](#part-10--improving-indexcshtml-table-accessibility--filter)
-  - [Snippet 10.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links](#snippet-10a-accessible-table-with-caption-scopecol-filter-and-context-links)
+- [Part 4 – Form Layout, Visual Section Grouping & Proportionate Input Sizing](#part-4--form-layout-visual-section-grouping--proportionate-input-sizing)
+  - [Snippet 4.A: Form Layout, Section Card & Input Width Classes in `wwwroot/css/site.css`](#snippet-4a-form-layout-section-card--input-width-classes-in-wwwrootcsssitecss)
+  - [Snippet 4.B: Structured Form Layout with Section Cards & Sized Inputs in `Create.cshtml`](#snippet-4b-structured-form-layout-with-section-cards--sized-inputs-in-createcshtml)
+- [Part 5 – Labels, Hints (`aria-describedby`) & Live Character Counter](#part-5--labels-hints-aria-describedby--live-character-counter)
+  - [Snippet 5.A: Textarea with Hint Text Linked via `aria-describedby`](#snippet-5a-textarea-with-hint-text-linked-via-aria-describedby)
+  - [Snippet 5.B: Accessible Live Character Counter (`aria-live="polite"`)](#snippet-5b-accessible-live-character-counter-aria-livepolite)
+- [Part 6 – Server-Side Validation Attributes](#part-6--server-side-validation-attributes)
+  - [Snippet 6.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes](#snippet-6a-createphdapplicationviewmodelcs-with-validation--display-attributes)
+  - [Snippet 6.B: Adding Display Names to `FundingType.cs`](#snippet-6b-adding-display-names-to-fundingtypecs)
+- [Part 7 – Accessible Error Summary & Inline Error Messages](#part-7--accessible-error-summary--inline-error-messages)
+  - [Snippet 7.A: Focusable Error Summary with Anchor Links to Fields](#snippet-7a-focusable-error-summary-with-anchor-links-to-fields)
+  - [Snippet 7.B: Inline Error Message with `aria-invalid` and `aria-describedby`](#snippet-7b-inline-error-message-with-aria-invalid-and-aria-describedby)
+- [Part 8 – Client-Side Validation (Native HTML5 Constraints)](#part-8--client-side-validation-native-html5-constraints)
+  - [Snippet 8.A: Adding HTML5 Validation Attributes in `Create.cshtml`](#snippet-8a-adding-html5-validation-attributes-in-createcshtml)
+- [Part 9 – Improving `Index.cshtml` (Table Accessibility & Filter)](#part-9--improving-indexcshtml-table-accessibility--filter)
+  - [Snippet 9.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links](#snippet-9a-accessible-table-with-caption-scopecol-filter-and-context-links)
+- [Part 10 (Optional) – Improving `EditStatus.cshtml` (Admissions Decision Form)](#part-10-optional--improving-editstatuscshtml-admissions-decision-form)
+  - [Snippet 10.A: Controller & View for Allowed Status Transitions](#snippet-10a-controller--view-for-allowed-status-transitions)
 
 ---
 
@@ -67,7 +64,7 @@ Update the primary button CSS custom properties inside `:root` (around line 36 o
 In the starter `Create.cshtml`, each field prompt is rendered inside a plain `<span class="form-label">` element:
 
 ```cshtml
-<!-- Starter code (unaccessible: no programmatic association with the input) -->
+<!-- Starter code (inaccessible: no programmatic association with the input) -->
 <div class="mb-3">
     <span class="form-label">FirstName</span>
     <input type="text"
@@ -364,8 +361,6 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
 ```cshtml
-<h2 class="h4 mt-4">1. About you</h2>
-
 <div class="mb-3">
     <label asp-for="FirstName" class="form-label"></label>
     <input asp-for="FirstName"
@@ -404,8 +399,6 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
 ```cshtml
-<h2 class="h4 mt-4">2. Programme and mode of study</h2>
-
 <div class="mb-3">
     <label asp-for="ProgrammeCode" class="form-label"></label>
     <select asp-for="ProgrammeCode" class="form-select">
@@ -463,8 +456,6 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
 ```cshtml
-<h2 class="h4 mt-4">4. Funding and supervision</h2>
-
 <fieldset class="mb-3">
     <legend class="form-label">How will your PhD studies be funded?</legend>
 
@@ -523,15 +514,269 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 
 ---
 
-## Part 4 – Labels, Hints (`aria-describedby`) & Live Character Counter
+## Part 4 – Form Layout, Visual Section Grouping & Proportionate Input Sizing
 
-### Snippet 4.A: Textarea with Hint Text Linked via `aria-describedby`
+### Snippet 4.A: Form Layout, Section Card & Input Width Classes in `wwwroot/css/site.css`
+
+**File to inspect / customise:** `PgrStudentManagement.Web/wwwroot/css/site.css` (inside `@layer components`)
+
+These classes constrain the overall form container to a comfortable reading measure (`48rem` / `768px`), visually separate the 4 logical sections into `.form-section` cards, pair related fields side-by-side in `.form-grid-2` (collapsing automatically on narrow screens or at 400% zoom for **WCAG 1.4.10 Reflow**), and size inputs proportionately (`.input-width-sm`, `.input-width-md`):
+
+```css
+  /* ------------------------------------------------------------------------
+     Form Layout, Visual Grouping & Input Sizing (Lab Part 4 - Snippet 4.A)
+     ------------------------------------------------------------------------ */
+  .form-container {
+    max-width: 48rem;
+  }
+
+  .form-section {
+    padding: 1.25rem 1.5rem;
+    margin-block-end: 1.5rem;
+    background-color: var(--theme-surface-subtle);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-md);
+  }
+
+  .form-section > h2 {
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    padding-block-end: 0.5rem;
+    font-size: 1.15rem;
+    border-block-end: 1px solid var(--theme-border);
+  }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0 1.25rem;
+  }
+
+  .input-width-sm {
+    max-width: 14rem;
+  }
+
+  .input-width-md {
+    max-width: 28rem;
+  }
+
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-start: 1.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--theme-border);
+  }
+```
+
+### Snippet 4.B: Structured Form Layout with Section Cards & Sized Inputs in `Create.cshtml`
+
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
+
+Wrap the form in `<div class="form-container">`, group the controls into four `<section class="form-section">` cards, pair `FirstName` and `LastName` inside `<div class="form-grid-2">`, apply `input-width-sm` / `input-width-md`, and wrap the buttons in `<div class="form-actions">`:
+
+```cshtml
+<div class="form-container">
+    <form asp-action="Create" method="post">
+
+        <section class="form-section">
+            <h2>1. About you</h2>
+
+            <div class="form-grid-2">
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName"
+                           class="form-control"
+                           autocomplete="given-name"
+                           spellcheck="false" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName"
+                           class="form-control"
+                           autocomplete="family-name"
+                           spellcheck="false" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EmailAddress" class="form-label"></label>
+                <div id="EmailAddress-hint" class="form-text">
+                    We will use this email address to send your application reference and updates.
+                </div>
+                <input asp-for="EmailAddress"
+                       type="email"
+                       class="form-control input-width-md"
+                       autocomplete="email"
+                       spellcheck="false"
+                       aria-describedby="EmailAddress-hint" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2>2. Programme and mode of study</h2>
+
+            <div class="mb-3">
+                <label asp-for="ProgrammeCode" class="form-label"></label>
+                <select asp-for="ProgrammeCode" class="form-select input-width-md">
+                    <option value="">Select a programme…</option>
+                    <option value="PHD-COMP">PhD Computing (PHD-COMP)</option>
+                    <option value="PHD-DESIGN">PhD Design (PHD-DESIGN)</option>
+                    <option value="MPHIL-COMP">MPhil Computing (MPHIL-COMP)</option>
+                </select>
+                <span asp-validation-for="ProgrammeCode" class="text-danger"></span>
+            </div>
+
+            <fieldset class="mb-3">
+                <legend class="form-label">Mode of study</legend>
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           asp-for="ModeOfStudy"
+                           id="ModeOfStudy-FullTime"
+                           value="Full-time" />
+                    <label class="form-check-label" for="ModeOfStudy-FullTime">
+                        Full-time (typically 3 years)
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           asp-for="ModeOfStudy"
+                           id="ModeOfStudy-PartTime"
+                           value="Part-time" />
+                    <label class="form-check-label" for="ModeOfStudy-PartTime">
+                        Part-time (typically 6 years)
+                    </label>
+                </div>
+
+                <span asp-validation-for="ModeOfStudy" class="text-danger"></span>
+            </fieldset>
+
+            <div class="mb-3">
+                <label asp-for="ProposedStartDate" class="form-label"></label>
+                <div id="ProposedStartDate-hint" class="form-text">
+                    For example, 01/10/2027. Most cohorts begin in October or January.
+                </div>
+                <input asp-for="ProposedStartDate"
+                       type="date"
+                       class="form-control input-width-sm"
+                       aria-describedby="ProposedStartDate-hint" />
+                <span asp-validation-for="ProposedStartDate" class="text-danger"></span>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2>3. Research proposal</h2>
+
+            <div class="mb-3">
+                <label asp-for="ProposedThesisTitle" class="form-label"></label>
+                <div id="ProposedThesisTitle-hint" class="form-text">
+                    Provide a working title for your proposed research project (up to 300 characters).
+                </div>
+                <input asp-for="ProposedThesisTitle"
+                       class="form-control"
+                       aria-describedby="ProposedThesisTitle-hint" />
+                <span asp-validation-for="ProposedThesisTitle" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ResearchSummary" class="form-label">
+                    Research summary (optional)
+                </label>
+                <div id="ResearchSummary-hint" class="form-text">
+                    Outline your research question, background context, and proposed methodology in up to 2,000 characters.
+                </div>
+                <textarea asp-for="ResearchSummary"
+                          rows="6"
+                          class="form-control"
+                          data-maxlength="2000"
+                          aria-describedby="ResearchSummary-hint ResearchSummary-count"></textarea>
+                <div id="ResearchSummary-count"
+                     class="form-text"
+                     aria-live="polite">
+                    You have 2,000 characters remaining
+                </div>
+                <span asp-validation-for="ResearchSummary" class="text-danger"></span>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2>4. Funding and supervision</h2>
+
+            <fieldset class="mb-3">
+                <legend class="form-label">How will your PhD studies be funded?</legend>
+
+                @foreach (var item in Html.GetEnumSelectList<FundingType>())
+                {
+                    var radioId = $"FundingSource-{item.Value}";
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="FundingSource"
+                               id="@radioId"
+                               value="@item.Value"
+                               checked="@(Model.FundingSource?.ToString() == item.Text || ((int?)Model.FundingSource)?.ToString() == item.Value)" />
+                        <label class="form-check-label" for="@radioId">
+                            @item.Text
+                        </label>
+                    </div>
+                }
+
+                <span asp-validation-for="FundingSource" class="text-danger"></span>
+            </fieldset>
+
+            <div class="mb-3">
+                <label asp-for="ProposedSupervisorStaffNumber" class="form-label">
+                    Proposed main supervisor (optional)
+                </label>
+                <div id="ProposedSupervisor-hint" class="form-text">
+                    Only academic staff eligible to act as a Main Supervisor are listed. Leave blank if you have not yet identified a supervisor.
+                </div>
+                <select asp-for="ProposedSupervisorStaffNumber"
+                        class="form-select input-width-md"
+                        aria-describedby="ProposedSupervisor-hint">
+                    <option value="">I have not identified a supervisor yet</option>
+                    @foreach (var supervisor in supervisors)
+                    {
+                        <option value="@supervisor.StaffNumber">
+                            @supervisor.DisplayName (@supervisor.StaffNumber)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="ProposedSupervisorStaffNumber" class="text-danger"></span>
+            </div>
+        </section>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                Submit application
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+```
+
+---
+
+## Part 5 – Labels, Hints (`aria-describedby`) & Live Character Counter
+
+### Snippet 5.A: Textarea with Hint Text Linked via `aria-describedby`
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml`
 
 ```cshtml
-<h2 class="h4 mt-4">3. Research proposal</h2>
-
 <div class="mb-3">
     <label asp-for="ProposedThesisTitle" class="form-label"></label>
     <div id="ProposedThesisTitle-hint" class="form-text">
@@ -564,9 +809,9 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 </div>
 ```
 
-### Snippet 4.B: Accessible Live Character Counter (`aria-live="polite"`)
+### Snippet 5.B: Accessible Live Character Counter (`aria-live="polite"`)
 
-**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (inside `@section Scripts`, or handled automatically by `wwwroot/js/site.js`)
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (inside `@section Scripts`, or handled automatically by `wwwroot/js/site.js` when `data-maxlength="2000"` is present on `#ResearchSummary`)
 
 ```cshtml
 @section Scripts {
@@ -598,9 +843,9 @@ Place this block right below `<h1>PhD Application Details</h1>` in `Views/PhdApp
 
 ---
 
-## Part 5 – Server-Side Validation Attributes
+## Part 6 – Server-Side Validation Attributes
 
-### Snippet 5.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes
+### Snippet 6.A: `CreatePhdApplicationViewModel.cs` with Validation & Display Attributes
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Models/CreatePhdApplicationViewModel.cs`
 
@@ -660,7 +905,7 @@ public class CreatePhdApplicationViewModel
 }
 ```
 
-### Snippet 5.B: Adding Display Names to `FundingType.cs`
+### Snippet 6.B: Adding Display Names to `FundingType.cs`
 
 **File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Models/FundingType.cs`
 
@@ -687,9 +932,9 @@ public enum FundingType
 
 ---
 
-## Part 6 – Accessible Error Summary & Inline Error Messages
+## Part 7 – Accessible Error Summary & Inline Error Messages
 
-### Snippet 6.A: Focusable Error Summary with Anchor Links to Fields
+### Snippet 7.A: Focusable Error Summary with Anchor Links to Fields
 
 **File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Create.cshtml` (place right above `<form>`)
 
@@ -734,7 +979,7 @@ public enum FundingType
 }
 ```
 
-### Snippet 6.B: Inline Error Message with `aria-invalid` and `aria-describedby`
+### Snippet 7.B: Inline Error Message with `aria-invalid` and `aria-describedby`
 
 When a specific field has a validation error, linking its error `<span>` in `aria-describedby` and setting `aria-invalid="true"` ensures screen readers announce the error immediately when the user focuses the input:
 
@@ -755,7 +1000,7 @@ When a specific field has a validation error, linking its error `<span>` in `ari
     </div>
     <input asp-for="EmailAddress"
            type="email"
-           class="form-control @(emailInvalid ? "is-invalid" : "")"
+           class="form-control input-width-md @(emailInvalid ? "is-invalid" : "")"
            autocomplete="email"
            spellcheck="false"
            aria-invalid="@(emailInvalid ? "true" : "false")"
@@ -765,9 +1010,9 @@ When a specific field has a validation error, linking its error `<span>` in `ari
 
 ---
 
-## Part 7 – Client-Side Validation (Native HTML5 Constraints)
+## Part 8 – Client-Side Validation (Native HTML5 Constraints)
 
-### Snippet 7.A: Adding HTML5 Validation Attributes in `Create.cshtml`
+### Snippet 8.A: Adding HTML5 Validation Attributes in `Create.cshtml`
 
 Client-side validation in this application uses native HTML5 constraint attributes only (no jQuery or JavaScript validation libraries):
 
@@ -781,7 +1026,6 @@ Client-side validation in this application uses native HTML5 constraint attribut
    - `ProposedThesisTitle`: `required maxlength="300"`
    - `ResearchSummary` (`<textarea>`): `maxlength="2000"` (leave `required` off because this field is optional)
    - `FundingSource` (radio buttons): `required`
-2. Keep `formnovalidate` on the **"Save as draft and return later"** submit button (in Part 8) so applicants can save partial progress without being blocked by browser constraint validation.
 
 ```cshtml
 <input asp-for="FirstName"
@@ -794,213 +1038,101 @@ Client-side validation in this application uses native HTML5 constraint attribut
 
 ---
 
-## Part 8 (Optional Stretch Goal) – Sectioned Form with "Save and Return Later"
+## Part 9 – Improving `Index.cshtml` (Table Accessibility & Filter)
 
-To keep this optional stretch goal straightforward and manageable, you can implement **Save and Return Later** and **Multi-Step Sections** in two independent pieces:
-1. Allow an application to be saved in a `Draft` state (even if some sections are still blank).
-2. Split the form UI into 4 navigable step panels with a **"Save as draft and return later"** button alongside **"Submit application"**.
+### Snippet 9.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links
 
-### Snippet 8.A: Update `ApplicationStatus.cs` and `PhdApplication.cs` for Drafts
-
-In `Modules/PhdApplications/Models/ApplicationStatus.cs`, add `Draft` as the first enum value:
-
-```csharp
-public enum ApplicationStatus
-{
-    Draft,
-    Submitted,
-    UnderReview,
-    InterviewScheduled,
-    OfferMade,
-    OfferAccepted,
-    Rejected,
-    Withdrawn,
-    Enrolled
-}
-```
-
-### Snippet 8.B: Update `StudentManagementDbContext.cs` (`ConfigurePhdApplications`)
-
-If you want to allow saving a partial draft before all fields are filled in, relax `.IsRequired()` on the non-key columns in `ConfigurePhdApplications` (or store empty strings `""` for not-yet-completed text fields so no schema migration is even required!).
-
-> **Shortcut Hint (Zero-Migration Option):**
-> If you default uncompleted draft strings to `string.Empty` (`""`) when saving a draft, you only need to add `Draft` to `ApplicationStatus`—because `Status` is stored as a `TEXT` string in SQLite, **no database migration is required**!
-
-### Snippet 8.C: Add Draft Save & Final Submit Methods to `PhdApplicationService.cs`
-
-**File to edit:** `PgrStudentManagement.Web/Modules/PhdApplications/Services/PhdApplicationService.cs`
-
-```csharp
-public async Task<ApplicationOutcome> SaveDraftApplicationAsync(
-    PhdApplication draft,
-    CancellationToken cancellationToken = default)
-{
-    ArgumentNullException.ThrowIfNull(draft);
-    draft.Status = ApplicationStatus.Draft;
-
-    var exists = await _phdApplicationDao.ApplicationExistsAsync(
-        draft.ApplicationReference,
-        cancellationToken);
-
-    if (!exists)
-    {
-        await _phdApplicationDao.AddApplicationAsync(draft, cancellationToken);
-        return ApplicationOutcome.Created;
-    }
-
-    await _phdApplicationDao.UpdateApplicationAsync(draft, cancellationToken);
-    return ApplicationOutcome.Updated;
-}
-```
-
-### Snippet 8.D: Dual Submit Buttons ("Submit" vs "Save and return later")
-
-**In `Views/PhdApplications/Create.cshtml`:**
-Replace the single Create button with two buttons sharing `name="command"`:
+**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Index.cshtml`
 
 ```cshtml
-<div class="d-flex gap-2 mt-4">
-    <button type="submit"
-            name="command"
-            value="submit"
-            class="btn btn-primary">
-        Submit application
-    </button>
+@model IReadOnlyList<PgrStudentManagement.Web.Modules.PhdApplications.Models.PhdApplication>
 
-    <button type="submit"
-            name="command"
-            value="draft"
-            formnovalidate
-            class="btn btn-outline-secondary">
-        Save as draft and return later
-    </button>
+@{
+    ViewData["Title"] = "PhD Applications";
+    var selectedStatus = ViewData["SelectedStatus"] as ApplicationStatus?;
+}
 
-    <a asp-action="Index" class="btn btn-link">Cancel</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>PhD Applications</h1>
+    <a asp-action="Create" class="btn btn-primary">Create Application</a>
 </div>
-```
 
-**In `PhdApplicationsController.cs` (`[HttpPost] Create`):**
-Add `string command = "submit"` to the action parameters:
-
-```csharp
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Create(
-    CreatePhdApplicationViewModel model,
-    string command = "submit",
-    CancellationToken cancellationToken = default)
-{
-    bool isDraft = string.Equals(command, "draft", StringComparison.OrdinalIgnoreCase);
-
-    // Only enforce full required-field validation when submitting for real
-    if (!isDraft && !ModelState.IsValid)
-    {
-        ViewBag.Supervisors =
-            await _phdApplicationService.GetEligibleMainSupervisorsAsync(cancellationToken);
-        return View(model);
-    }
-
-    var reference =
-        await _phdApplicationService.GenerateNextApplicationReferenceAsync(cancellationToken);
-
-    var application = new PhdApplication
-    {
-        ApplicationReference = reference,
-        FirstName = model.FirstName?.Trim() ?? string.Empty,
-        LastName = model.LastName?.Trim() ?? string.Empty,
-        EmailAddress = model.EmailAddress?.Trim() ?? string.Empty,
-        ProgrammeCode = model.ProgrammeCode?.Trim() ?? string.Empty,
-        ModeOfStudy = model.ModeOfStudy?.Trim() ?? string.Empty,
-        ProposedStartDate = model.ProposedStartDate,
-        ProposedThesisTitle = model.ProposedThesisTitle?.Trim() ?? string.Empty,
-        ResearchSummary = model.ResearchSummary?.Trim(),
-        FundingSource = model.FundingSource ?? FundingType.SelfFunded,
-        ProposedSupervisorStaffNumber =
-            string.IsNullOrWhiteSpace(model.ProposedSupervisorStaffNumber)
-                ? null
-                : model.ProposedSupervisorStaffNumber.Trim(),
-        Status = isDraft ? ApplicationStatus.Draft : ApplicationStatus.Submitted,
-        SubmittedDate = DateTime.UtcNow.Date
-    };
-
-    var outcome = isDraft
-        ? await _phdApplicationService.SaveDraftApplicationAsync(application, cancellationToken)
-        : await _phdApplicationService.CreateApplicationAsync(application, cancellationToken);
-
-    if (outcome is ApplicationOutcome.Created or ApplicationOutcome.Updated)
-    {
-        TempData["SuccessMessage"] = isDraft
-            ? $"Draft saved! Your reference is {application.ApplicationReference}. You can return and complete it at any time."
-            : $"Application {application.ApplicationReference} submitted successfully.";
-
-        return RedirectToAction(
-            nameof(Details),
-            new { applicationReference = application.ApplicationReference });
-    }
-    // ... handle errors as in Snippet 2.B
-}
-```
-
-### Snippet 8.E (Optional Stretch Goal): Multi-Step Wizard Tabs / Sections with `<fieldset>` Panels
-
-If you want to split the long form on `Create.cshtml` into 4 navigable step panels (while keeping all fields in the DOM so progressive enhancement works with or without JS):
-
-```cshtml
-<nav aria-label="Application sections" class="mb-4">
-    <ol class="nav nav-pills gap-2" id="step-nav">
-        <li class="nav-item"><button type="button" class="nav-link active" data-step="1" aria-current="step">1. About you</button></li>
-        <li class="nav-item"><button type="button" class="nav-link" data-step="2">2. Programme</button></li>
-        <li class="nav-item"><button type="button" class="nav-link" data-step="3">3. Proposal</button></li>
-        <li class="nav-item"><button type="button" class="nav-link" data-step="4">4. Funding &amp; Submit</button></li>
-    </ol>
-</nav>
-
-<!-- Wrap each section in <div class="app-step" data-step-panel="1"> ... </div> -->
-```
-
-```javascript
-// Vanilla JS (already included in wwwroot/js/site.js) to show one section at a time
-// and reveal hidden panels if native HTML5 validation flags an input inside them:
-(function () {
-    const panels = document.querySelectorAll('[data-step-panel]');
-    const buttons = document.querySelectorAll('[data-step]');
-    if (panels.length === 0) return;
-
-    function showStep(stepNumber) {
-        panels.forEach(p => {
-            p.hidden = p.getAttribute('data-step-panel') !== String(stepNumber);
-        });
-        buttons.forEach(b => {
-            const active = b.getAttribute('data-step') === String(stepNumber);
-            b.classList.toggle('active', active);
-            if (active) b.setAttribute('aria-current', 'step');
-            else b.removeAttribute('aria-current');
-        });
-    }
-
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => showStep(btn.getAttribute('data-step')));
-    });
-
-    const form = panels[0].closest('form');
-    if (form) {
-        form.addEventListener('invalid', (event) => {
-            const panel = event.target.closest?.('[data-step-panel]');
-            if (panel && panel.hidden) {
-                showStep(panel.getAttribute('data-step-panel'));
+<form method="get" asp-action="Index" class="row g-2 align-items-end mb-4">
+    <div class="col-auto">
+        <label for="statusFilter" class="form-label">Filter by status</label>
+        <select id="statusFilter" name="statusFilter" class="form-select">
+            <option value="">All statuses</option>
+            @foreach (var status in Enum.GetValues<ApplicationStatus>())
+            {
+                <option value="@status" selected="@(selectedStatus == status)">
+                    @status
+                </option>
             }
-        }, true);
-    }
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Apply filter</button>
+        @if (selectedStatus.HasValue)
+        {
+            <a asp-action="Index" class="btn btn-link">Clear</a>
+        }
+    </div>
+</form>
 
-    showStep(1);
-})();
+@if (Model.Count == 0)
+{
+    <p class="alert alert-info" role="status">No PhD applications found.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <caption class="visually-hidden">List of PhD applications</caption>
+        <thead>
+            <tr>
+                <th scope="col">Reference</th>
+                <th scope="col">Applicant</th>
+                <th scope="col">Programme</th>
+                <th scope="col">Mode of study</th>
+                <th scope="col">Funding</th>
+                <th scope="col">Status</th>
+                <th scope="col">Submitted</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var application in Model)
+        {
+            <tr>
+                <td>@application.ApplicationReference</td>
+                <td>@application.FullName</td>
+                <td>@application.ProgrammeCode</td>
+                <td>@application.ModeOfStudy</td>
+                <td>@application.FundingSource</td>
+                <td>@application.Status</td>
+                <td>@application.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-action="Details"
+                       asp-route-applicationReference="@application.ApplicationReference">
+                        Details<span class="visually-hidden"> for @application.ApplicationReference (@application.FullName)</span>
+                    </a>
+                    |
+                    <a asp-action="EditStatus"
+                       asp-route-applicationReference="@application.ApplicationReference">
+                        Edit status<span class="visually-hidden"> for @application.ApplicationReference (@application.FullName)</span>
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 ```
 
 ---
 
-## Part 9 – Improving `EditStatus.cshtml` (Admissions Decision Form)
+## Part 10 (Optional) – Improving `EditStatus.cshtml` (Admissions Decision Form)
 
-### Snippet 9.A: Controller & View for Allowed Status Transitions
+### Snippet 10.A: Controller & View for Allowed Status Transitions
 
 **1. In `PhdApplicationsController.cs` (`EditStatus` GET & POST):**
 Populate `ViewBag.AllowedTransitions` using the helper already provided on `_phdApplicationService`:
@@ -1122,97 +1254,5 @@ else
             Cancel
         </a>
     </form>
-}
-```
-
----
-
-## Part 10 – Improving `Index.cshtml` (Table Accessibility & Filter)
-
-### Snippet 10.A: Accessible Table with `<caption>`, `scope="col"`, Filter, and Context Links
-
-**File to edit:** `PgrStudentManagement.Web/Views/PhdApplications/Index.cshtml`
-
-```cshtml
-@model IReadOnlyList<PgrStudentManagement.Web.Modules.PhdApplications.Models.PhdApplication>
-
-@{
-    ViewData["Title"] = "PhD Applications";
-    var selectedStatus = ViewData["SelectedStatus"] as ApplicationStatus?;
-}
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>PhD Applications</h1>
-    <a asp-action="Create" class="btn btn-primary">Create Application</a>
-</div>
-
-<form method="get" asp-action="Index" class="row g-2 align-items-end mb-4">
-    <div class="col-auto">
-        <label for="statusFilter" class="form-label">Filter by status</label>
-        <select id="statusFilter" name="statusFilter" class="form-select">
-            <option value="">All statuses</option>
-            @foreach (var status in Enum.GetValues<ApplicationStatus>())
-            {
-                <option value="@status" selected="@(selectedStatus == status)">
-                    @status
-                </option>
-            }
-        </select>
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-outline-primary">Apply filter</button>
-        @if (selectedStatus.HasValue)
-        {
-            <a asp-action="Index" class="btn btn-link">Clear</a>
-        }
-    </div>
-</form>
-
-@if (Model.Count == 0)
-{
-    <p class="alert alert-info" role="status">No PhD applications found.</p>
-}
-else
-{
-    <table class="table table-striped align-middle">
-        <caption class="visually-hidden">List of PhD applications</caption>
-        <thead>
-            <tr>
-                <th scope="col">Reference</th>
-                <th scope="col">Applicant</th>
-                <th scope="col">Programme</th>
-                <th scope="col">Mode of study</th>
-                <th scope="col">Funding</th>
-                <th scope="col">Status</th>
-                <th scope="col">Submitted</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var application in Model)
-        {
-            <tr>
-                <td>@application.ApplicationReference</td>
-                <td>@application.FullName</td>
-                <td>@application.ProgrammeCode</td>
-                <td>@application.ModeOfStudy</td>
-                <td>@application.FundingSource</td>
-                <td>@application.Status</td>
-                <td>@application.SubmittedDate.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Details"
-                       asp-route-applicationReference="@application.ApplicationReference">
-                        Details<span class="visually-hidden"> for @application.ApplicationReference (@application.FullName)</span>
-                    </a>
-                    |
-                    <a asp-action="EditStatus"
-                       asp-route-applicationReference="@application.ApplicationReference">
-                        Edit status<span class="visually-hidden"> for @application.ApplicationReference (@application.FullName)</span>
-                    </a>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
 }
 ```

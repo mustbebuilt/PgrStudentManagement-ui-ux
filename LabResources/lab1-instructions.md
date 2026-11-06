@@ -2,9 +2,9 @@
 
 ## Overview
 
-The **PhD Applications** module (`PgrStudentManagement.Web/Modules/PhdApplications`) works, but its forms have been **deliberately left in a poor state**: the primary submit button has poor colour contrast, field prompts use `<span>` tags instead of `<label>` elements, every field is a plain `<input type="text">`, and all form validation has been removed.
+The **PhD Applications** module (`PgrStudentManagement.Web/Modules/PhdApplications`) works, but its forms and index table have been **deliberately left in a poor state**: the primary submit button has poor colour contrast, field prompts use `<span>` tags instead of `<label>` elements, every field is a plain `<input type="text">` stretching across the entire 1,200px screen in a flat ungrouped list, all form validation has been removed, and the applications table lacks accessible headers, captions, filtering, and link context.
 
-In **Lab 1**, you will redesign the PhD Applications forms on a dedicated Git branch (`ui-ux-improvements`) so they are **easy to use, accessible (WCAG 2.2), and robust**, while keeping your `main` branch untouched as a baseline.
+In **Lab 1**, you will redesign the PhD Applications views on a dedicated Git branch (`ui-ux-improvements`) so they are **easy to use, accessible (WCAG 2.2), and robust**, while keeping your `main` branch untouched as a baseline.
 In **Lab 2** ([`lab2-instructions.md`](./lab2-instructions.md)), you will run **usability and automated accessibility tests** (using Playwright, Axe, Accessibility Insights, and Chrome DevTools) against both the `main` branch and your new `ui-ux-improvements` branch to measure the impact of your changes.
 
 ---
@@ -42,23 +42,25 @@ By the end of Lab 1 you should be able to:
 1. Fix **WCAG 2.2 AA colour contrast** (`4.5:1` minimum under Criterion 1.4.3) using centralized CSS custom properties (`:root` variables in `wwwroot/css/site.css`) and associate form controls programmatically using `<label asp-for="...">` (WCAG 1.3.1 & 4.1.2).
 2. **Minimise user input and prevent errors** by separating form models (ViewModels) from database entities, auto-generating system fields on the server, and providing post-redirect confirmation feedback using `TempData` and `role="status"` (WCAG 4.1.3 Status Messages).
 3. Replace plain text boxes with constrained, semantic HTML controls (`email`, `date`, `<select>`, `<textarea>`, radio `<fieldset>`s) that support recognition over recall.
-4. Add clear human-readable display names, hint text (`aria-describedby`), groupings (`<fieldset>`/`<legend>`), and live character counts (`aria-live="polite"`) to communicate expectations upfront.
-5. Add server-side validation and display errors accessibly (focusable error summary + inline field errors with `aria-invalid="true"`).
-6. Use native HTML5 client-side constraint validation (`required`, `maxlength`, `type="email"`, `type="date"`).
-7. *(Optional Stretch Goal)* Split a long form into navigable sections with a **Save as draft and return later** feature.
+4. **Structure form layout and visual hierarchy** using constrained reading widths (`.form-container`), grouped section cards (`.form-section`), responsive side-by-side field pairing (`.form-grid-2` supporting WCAG 1.4.10 Reflow at 400% zoom), and proportionate input widths (`.input-width-sm`, `.input-width-md`).
+5. Add clear human-readable display names, hint text (`aria-describedby`), and live character counts (`aria-live="polite"`) to communicate expectations upfront.
+6. Add server-side validation and display errors accessibly (focusable error summary + inline field errors with `aria-invalid="true"`).
+7. Use native HTML5 client-side constraint validation (`required`, `maxlength`, `type="email"`, `type="date"`).
+8. Build an **accessible data table** (`<caption>`, `scope="col"`, status filtering, and visually hidden row context on action links for WCAG 2.4.4 Link Purpose in Context).
+9. *(Optional)* Constrain admissions status decisions to valid domain state transitions (`EditStatus.cshtml`).
 
 ### Files you will work with
 
 | File | What you will do | Matching Snippets |
 | :--- | :--- | :--- |
-| `wwwroot/css/site.css` | Fix the non-WCAG-compliant colour contrast on `.btn-primary` (`Create` button) via `:root` CSS custom properties | [Snippet 1.A](./code-snippets.md#snippet-1a-fix-primary-button-colour-contrast-in-wwwrootcsssitecss) |
-| `Views/PhdApplications/Create.cshtml` | Replace `<span>` tags with `<label asp-for="...">`, replace `type="text"` inputs with semantic controls, add hints, error summary, and (optionally) step sections | [Snippet 1.B](./code-snippets.md#snippet-1b-replace-span-prompts-with-semantic-label-asp-for-elements-in-createcshtml), [Snippets 3.A–3.D](./code-snippets.md#part-3--appropriate-html-input-types--controls), [4.A–4.B](./code-snippets.md#part-4--labels-hints-aria-describedby--live-character-counter), [6.A–6.B](./code-snippets.md#part-6--accessible-error-summary--inline-error-messages), [7.A](./code-snippets.md#part-7--client-side-validation-native-html5-constraints), [8.D–8.E](./code-snippets.md#part-8-optional-stretch-goal--sectioned-form-with-save-and-return-later) |
-| `Modules/PhdApplications/Models/CreatePhdApplicationViewModel.cs` | *(New file)* Form view model with display & validation attributes | [Snippet 2.A](./code-snippets.md#snippet-2a-create-createphdapplicationviewmodelcs), [Snippet 5.A](./code-snippets.md#snippet-5a-createphdapplicationviewmodelcs-with-validation--display-attributes) |
-| `Modules/PhdApplications/Controllers/PhdApplicationsController.cs` | Bind to the view model, load dropdown data, set `TempData["SuccessMessage"]` for user feedback, and (optionally) handle Draft vs Submit | [Snippet 2.B](./code-snippets.md#snippet-2b-update-phdapplicationscontrollercreate-get--post), [Snippet 8.D](./code-snippets.md#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later), [Snippet 9.A](./code-snippets.md#snippet-9a-controller--view-for-allowed-status-transitions) |
+| `wwwroot/css/site.css` | Fix the non-WCAG-compliant colour contrast on `.btn-primary` (`Create` button) via `:root` CSS custom properties and inspect the form layout utility classes | [Snippet 1.A](./code-snippets.md#snippet-1a-fix-primary-button-colour-contrast-in-wwwrootcsssitecss), [Snippet 4.A](./code-snippets.md#snippet-4a-form-layout-section-card--input-width-classes-in-wwwrootcsssitecss) |
+| `Views/PhdApplications/Create.cshtml` | Replace `<span>` tags with `<label asp-for="...">`, replace `type="text"` inputs with semantic controls, group into `.form-section` cards with proportionate input widths, and add hints, error summary, and HTML5 validation | [Snippet 1.B](./code-snippets.md#snippet-1b-replace-span-prompts-with-semantic-label-asp-for-elements-in-createcshtml), [Snippets 3.A–3.D](./code-snippets.md#part-3--appropriate-html-input-types--controls), [Snippet 4.B](./code-snippets.md#snippet-4b-structured-form-layout-with-section-cards--sized-inputs-in-createcshtml), [5.A–5.B](./code-snippets.md#part-5--labels-hints-aria-describedby--live-character-counter), [7.A–7.B](./code-snippets.md#part-7--accessible-error-summary--inline-error-messages), [8.A](./code-snippets.md#part-8--client-side-validation-native-html5-constraints) |
+| `Modules/PhdApplications/Models/CreatePhdApplicationViewModel.cs` | *(New file)* Form view model with display & validation attributes | [Snippet 2.A](./code-snippets.md#snippet-2a-create-createphdapplicationviewmodelcs), [Snippet 6.A](./code-snippets.md#snippet-6a-createphdapplicationviewmodelcs-with-validation--display-attributes) |
+| `Modules/PhdApplications/Controllers/PhdApplicationsController.cs` | Bind to the view model, load dropdown data, set `TempData["SuccessMessage"]` for user feedback, and (optionally) pass allowed status transitions | [Snippet 2.B](./code-snippets.md#snippet-2b-update-phdapplicationscontrollercreate-get--post), [Snippet 10.A](./code-snippets.md#snippet-10a-controller--view-for-allowed-status-transitions) |
 | `Views/PhdApplications/Details.cshtml` | Render the `TempData["SuccessMessage"]` confirmation banner (`role="status"`) after creating an application or updating its status | [Snippet 2.C](./code-snippets.md#snippet-2c-display-tempdatasuccessmessage-banner-in-detailscshtml) |
-| `Views/PhdApplications/EditStatus.cshtml` | Replace free-text status with radio buttons for valid transitions | [Snippet 9.A](./code-snippets.md#snippet-9a-controller--view-for-allowed-status-transitions) |
-| `Views/PhdApplications/Index.cshtml` | *(Optional)* Add table `<caption>`, `scope="col"`, status filter, and screen-reader context | [Snippet 10.A](./code-snippets.md#snippet-10a-accessible-table-with-caption-scopecol-filter-and-context-links) |
-| `wwwroot/js/site.js` | Vanilla JS helpers for live character count and progressive multi-step sections | [Snippet 4.B](./code-snippets.md#snippet-4b-accessible-live-character-counter-aria-livepolite), [Snippet 8.E](./code-snippets.md#snippet-8e-optional-stretch-goal-multi-step-wizard-tabs--sections-with-fieldset-panels) |
+| `Views/PhdApplications/Index.cshtml` | Add table `<caption>`, `scope="col"`, status filter `<form method="get">`, and screen-reader context on action links | [Snippet 9.A](./code-snippets.md#snippet-9a-accessible-table-with-caption-scopecol-filter-and-context-links) |
+| `Views/PhdApplications/EditStatus.cshtml` | *(Optional)* Replace free-text status with radio buttons for valid transitions | [Snippet 10.A](./code-snippets.md#snippet-10a-controller--view-for-allowed-status-transitions) |
+| `wwwroot/js/site.js` | Vanilla JS helper for live character count and error summary focus | [Snippet 5.B](./code-snippets.md#snippet-5b-accessible-live-character-counter-aria-livepolite) |
 
 Run the app with (no external database server required—SQLite and static JSON data run out of the box):
 ```bash
@@ -70,23 +72,23 @@ Then open **PhD Applications** in the top navigation bar (or click **New PhD App
 
 ## Part 0 – Inspect the Starting Point (5–10 mins)
 
-**Goal:** Build the habit of inspecting a live interface critically for visual, semantic, and workflow barriers before writing code.
+**Goal:** Build the habit of inspecting a live interface critically for visual, semantic, layout, and workflow barriers before writing code.
 
-Open `/PhdApplications/Create` and `/PhdApplications/EditStatus` in your browser and look for these 12 deliberate flaws:
+Open `/PhdApplications`, `/PhdApplications/Create`, and `/PhdApplications/EditStatus` in your browser and look for these 12 deliberate flaws:
 
 | # | Flaw in the starter code | Where |
 | :--- | :--- | :--- |
 | 1 | **Low colour contrast on the `Create` button**: white text (`#ffffff`) on a light sky-blue background (`#7cb8eb`) gives a contrast ratio of only **`2.12:1`**, failing WCAG 2.2 AA (`4.5:1` minimum) | `wwwroot/css/site.css` (`.btn-primary`) |
 | 2 | **Missing `<label>` tags**: field prompts are plain `<span class="form-label">` tags with no `for` attribute—clicking a prompt does not focus its input, and screen readers announce every input as unlabelled | `Create.cshtml` |
 | 3 | Every field is `<input type="text">` (even dates, emails, enums, and the 2,000-character research summary) | `Create.cshtml`, `EditStatus.cshtml` |
-| 4 | Prompts show raw C# property names (`ApplicationReference`, `ProposedSupervisorStaffNumber`) | `Create.cshtml` |
-| 5 | No hint text explaining expected date formats or funding options | Both forms |
-| 6 | Users are forced to invent **system-owned data**: `ApplicationReference`, `SubmittedDate`, and a supervisor's **staff number** (`AS1001`) | `Create.cshtml` |
-| 7 | **Silent failures & missing confirmation feedback**: if binding fails (e.g. typing `"Offer made"` with a space), the page reloads with zero error messages, and successful redirects show no `TempData` confirmation banner | Both forms & `Details.cshtml` |
-| 8 | Optional fields (`ResearchSummary`, `ProposedSupervisorStaffNumber`) look identical to required fields | `Create.cshtml` |
-| 9 | One long ungrouped list of 12 inputs with no way to save progress | `Create.cshtml` |
-| 10 | `Create (POST)` binds directly to the EF Core `PhdApplication` entity (**over-posting** vulnerability) | `PhdApplicationsController.cs` |
-| 11 | `[HttpPost]` actions are missing `[ValidateAntiForgeryToken]` | `PhdApplicationsController.cs` |
+| 4 | **Poor form layout & full-width sprawl**: one ungrouped vertical wall of 12 fields where even a 10-character date stretches across the entire 1,200px screen | `Create.cshtml` |
+| 5 | Prompts show raw C# property names (`ApplicationReference`, `ProposedSupervisorStaffNumber`) | `Create.cshtml` |
+| 6 | No hint text explaining expected date formats or funding options | Both forms |
+| 7 | Users are forced to invent **system-owned data**: `ApplicationReference`, `SubmittedDate`, and a supervisor's **staff number** (`AS1001`) | `Create.cshtml` |
+| 8 | **Silent failures & missing confirmation feedback**: if binding fails (e.g. typing `"Offer made"` with a space), the page reloads with zero error messages, and successful redirects show no `TempData` confirmation banner | Both forms & `Details.cshtml` |
+| 9 | Optional fields (`ResearchSummary`, `ProposedSupervisorStaffNumber`) look identical to required fields | `Create.cshtml` |
+| 10 | **Inaccessible index table**: `Index.cshtml` lacks a `<caption>`, `scope="col"` on `<th>` headers, status filtering, and unique link context (repeating generic `"Details"` and `"Edit status"` links on every row) | `Index.cshtml` |
+| 11 | `Create (POST)` binds directly to the EF Core `PhdApplication` entity (**over-posting** vulnerability) and `[HttpPost]` actions lack `[ValidateAntiForgeryToken]` | `PhdApplicationsController.cs` |
 | 12 | `EditStatus` lets users type any status string, including disallowed transitions | `EditStatus.cshtml` |
 
 ---
@@ -208,9 +210,36 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
 
 ---
 
-## Part 4 – Human-Readable Display Names, Hint Text, Grouping & Live Character Count
+## Part 4 – Improve Form Layout, Visual Section Grouping & Proportionate Input Sizing
 
-**Goal:** **Communicate expectations upfront so users succeed on their first attempt without guesswork or trial-and-error.** Raw C# property names (`ProposedSupervisorStaffNumber`) leak internal database naming into the user interface. Providing plain-English labels (**WCAG 2.4.6 Headings and Labels**), explicit `(optional)` markers (so users know which fields they can safely skip), programmatic hint text linked via `aria-describedby` (**WCAG 1.3.1 Info and Relationships** & **3.3.2 Labels or Instructions**), logical section headings, and a polite live character counter (`aria-live="polite"`, **WCAG 4.1.3**) ensures both sighted and screen-reader users understand format and length constraints *before* they submit.
+**Goal:** **Reduce visual overwhelm and cognitive load by chunking the form into distinct section cards, pairing closely related fields, and sizing inputs to match the expected length of their values.** On the `main` branch, all fields sit in one flat vertical list and every `<input>` stretches across the entire 1,200px container—making a 10-character date (`2027-10-01`) look identical in size to a 300-character thesis title and forcing the user's eye to travel across the whole monitor. Good form layout uses:
+- **Constrained reading width (`.form-container`, `max-width: 48rem`)** so labels, hints, and inputs stay comfortably within a single visual field.
+- **Visual chunking (`.form-section`)** to group the 9 fields into 4 logical cards (`1. About you`, `2. Programme and mode of study`, `3. Research proposal`, and `4. Funding and supervision`).
+- **Responsive field pairing (`.form-grid-2`)** to place **First name** and **Last name** side-by-side on desktop while automatically collapsing to a single column on mobile screens or at **400% browser zoom (WCAG 1.4.10 Reflow)**.
+- **Proportionate input widths (`.input-width-sm`, `.input-width-md`)** so the width of a field gives a visual affordance of how much text is expected.
+
+### Step-by-Step Instructions
+
+1. **Inspect the Form Layout Classes in `wwwroot/css/site.css` (`Snippet 4.A`):**
+   - Open `PgrStudentManagement.Web/wwwroot/css/site.css` around line 635 (`Form Layout, Visual Grouping & Input Sizing`) and review how `.form-container`, `.form-section`, `.form-grid-2`, `.input-width-sm` (`14rem`), `.input-width-md` (`28rem`), and `.form-actions` are defined (see [**Snippet 4.A** in `code-snippets.md`](./code-snippets.md#snippet-4a-form-layout-section-card--input-width-classes-in-wwwrootcsssitecss)).
+2. **Wrap the Form & Group Fields into 4 `.form-section` Cards (`Snippet 4.B`):**
+   - In `Views/PhdApplications/Create.cshtml`, wrap the `<form>` inside `<div class="form-container"> ... </div>`.
+   - Group the fields into four `<section class="form-section">` blocks, each starting with an `<h2>` heading:
+     - `1. About you` (`FirstName` and `LastName` paired inside `<div class="form-grid-2">`, followed by `EmailAddress`)
+     - `2. Programme and mode of study` (`ProgrammeCode`, `ModeOfStudy`, and `ProposedStartDate`)
+     - `3. Research proposal` (`ProposedThesisTitle` and `ResearchSummary`)
+     - `4. Funding and supervision` (`FundingSource` and `ProposedSupervisorStaffNumber`)
+3. **Apply Proportionate Input Widths & Action Bar (`Snippet 4.B`):**
+   - Add `input-width-sm` to `ProposedStartDate` (`<input asp-for="ProposedStartDate" type="date" class="form-control input-width-sm" />`).
+   - Add `input-width-md` to `EmailAddress`, `ProgrammeCode`, and `ProposedSupervisorStaffNumber`, while leaving `ProposedThesisTitle` and `ResearchSummary` full width (`100%`) inside the section card.
+   - Wrap the **Submit application** and **Cancel** buttons at the bottom of the form in `<div class="form-actions">`.
+   - **Clue:** Copy [**Snippet 4.B** in `code-snippets.md`](./code-snippets.md#snippet-4b-structured-form-layout-with-section-cards--sized-inputs-in-createcshtml).
+
+---
+
+## Part 5 – Human-Readable Display Names, Hint Text & Live Character Count
+
+**Goal:** **Communicate expectations upfront so users succeed on their first attempt without guesswork or trial-and-error.** Raw C# property names (`ProposedSupervisorStaffNumber`) leak internal database naming into the user interface. Providing plain-English labels (**WCAG 2.4.6 Headings and Labels**), explicit `(optional)` markers (so users know which fields they can safely skip), programmatic hint text linked via `aria-describedby` (**WCAG 1.3.1 Info and Relationships** & **3.3.2 Labels or Instructions**), and a polite live character counter (`aria-live="polite"`, **WCAG 4.1.3**) ensures both sighted and screen-reader users understand format and length constraints *before* they submit.
 
 ### Step-by-Step Instructions
 
@@ -218,23 +247,20 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
    - In `CreatePhdApplicationViewModel.cs`, add `[Display(Name = "...")]` to each property (e.g. `[Display(Name = "Proposed thesis title")]`).
    - Mark the two optional fields right in their display names: `[Display(Name = "Research summary (optional)")]` and `[Display(Name = "Proposed main supervisor (optional)")]`.
    - In `FundingType.cs`, add `[Display(Name = "...")]` to each enum value (e.g. `[Display(Name = "Self-funded")]`).
-   - **Clue:** See [**Snippet 5.A**](./code-snippets.md#snippet-5a-createphdapplicationviewmodelcs-with-validation--display-attributes) and [**Snippet 5.B**](./code-snippets.md#snippet-5b-adding-display-names-to-fundingtypecs).
+   - **Clue:** See [**Snippet 6.A**](./code-snippets.md#snippet-6a-createphdapplicationviewmodelcs-with-validation--display-attributes) and [**Snippet 6.B**](./code-snippets.md#snippet-6b-adding-display-names-to-fundingtypecs).
 
-2. **Convert `ResearchSummary` to a `<textarea>` with `aria-describedby` (`Snippet 4.A`):**
+2. **Convert `ResearchSummary` to a `<textarea>` with `aria-describedby` (`Snippet 5.A`):**
    - Replace the `ResearchSummary` text input with `<textarea asp-for="ResearchSummary" rows="6" class="form-control">`.
    - Add a hint `<div id="ResearchSummary-hint" class="form-text">` above the textarea and link it using `aria-describedby="ResearchSummary-hint ResearchSummary-count"`.
-   - **Clue:** See [**Snippet 4.A** in `code-snippets.md`](./code-snippets.md#snippet-4a-textarea-with-hint-text-linked-via-aria-describedby).
+   - **Clue:** See [**Snippet 5.A** in `code-snippets.md`](./code-snippets.md#snippet-5a-textarea-with-hint-text-linked-via-aria-describedby).
 
-3. **Add a Live Character Counter (`Snippet 4.B`):**
+3. **Add a Live Character Counter (`Snippet 5.B`):**
    - Below the textarea, add `<div id="ResearchSummary-count" class="form-text" aria-live="polite">You have 2,000 characters remaining</div>`.
-   - Add the short script from [**Snippet 4.B**](./code-snippets.md#snippet-4b-accessible-live-character-counter-aria-livepolite) to update the remaining character count as the user types.
-
-4. **Section Headings:**
-   - Group the fields under four `<h2>` headings: `1. About you`, `2. Programme and mode of study`, `3. Research proposal`, and `4. Funding and supervision`.
+   - Add `data-maxlength="2000"` to the `<textarea>` (or include the script from [**Snippet 5.B**](./code-snippets.md#snippet-5b-accessible-live-character-counter-aria-livepolite)) so the remaining character count updates live as the user types.
 
 ---
 
-## Part 5 – Add Server-Side Validation Rules
+## Part 6 – Add Server-Side Validation Rules
 
 **Goal:** **Enforce data integrity on the server as the authoritative safety net while writing polite, specific error messages that help users recover quickly.** Because client-side checks in the browser can be bypassed or disabled, the server must always validate every required field, length limit, and data format. Good validation is not just about rejecting invalid requests—it is about **constructive error recovery** (**WCAG 3.3.1 Error Identification** & **3.3.3 Error Suggestion**): replacing generic framework defaults (`"The EmailAddress field is required."`) with clear, actionable guidance (`"Enter an email address in the correct format, like name@example.com"`) that explains both *what* is wrong and *how* to fix it.
 
@@ -244,11 +270,11 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
    - `[Required(ErrorMessage = "...")]` on `FirstName`, `LastName`, `EmailAddress`, `ProgrammeCode`, `ModeOfStudy`, `ProposedStartDate`, `ProposedThesisTitle`, and `FundingSource`.
    - `[EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]` on `EmailAddress`.
    - `[StringLength(...)]` matching the database limits (`100` for names, `255` for email, `300` for thesis title, `2000` for research summary).
-2. **Clue:** Copy the complete annotated class from [**Snippet 5.A** in `code-snippets.md`](./code-snippets.md#snippet-5a-createphdapplicationviewmodelcs-with-validation--display-attributes).
+2. **Clue:** Copy the complete annotated class from [**Snippet 6.A** in `code-snippets.md`](./code-snippets.md#snippet-6a-createphdapplicationviewmodelcs-with-validation--display-attributes).
 
 ---
 
-## Part 6 – Display Errors Accessibly (Error Summary + Inline Messages)
+## Part 7 – Display Errors Accessibly (Error Summary + Inline Messages)
 
 **Goal:** **Ensure no user is ever left stranded after a failed form submission, whether they navigate by sight, keyboard, or screen reader.** When a server postback returns validation errors, a sighted mouse user might notice red text halfway down the page, but keyboard-only and screen-reader users are placed back at the top of the document with no explanation unless we actively guide their focus. Prefixing the page `<title>` with `"Error: "`, moving keyboard focus immediately to a top-of-page **Error Summary** (`role="alert"`, `tabindex="-1"`) with anchor links that jump straight to each invalid field, and programmatically attaching inline error messages to inputs via `aria-invalid="true"` and `aria-describedby` guarantees fast, accessible error recovery without relying on colour alone (**WCAG 3.3.1**, **2.4.3 Focus Order**, and **1.4.1 Use of Color**).
 
@@ -256,66 +282,56 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
 
 1. **Prefix the Page `<title>` on Error:**
    - At the top of `Create.cshtml`, set `ViewData["Title"] = !ViewData.ModelState.IsValid ? "Error: Create PhD Application" : "Create PhD Application";`.
-2. **Add a Focusable Error Summary Box (`Snippet 6.A`):**
+2. **Add a Focusable Error Summary Box (`Snippet 7.A`):**
    - Right above `<form>`, render an `<div id="error-summary" class="alert alert-danger" role="alert" tabindex="-1">` whenever `!ViewData.ModelState.IsValid`.
    - Loop through `ViewData.ModelState` and render each error as a clickable anchor `<a href="#@entry.Key">@error.ErrorMessage</a>` that jumps focus directly to the input with that `id`.
    - Call `document.getElementById('error-summary')?.focus();` so screen-reader and keyboard users land on the summary immediately after page reload.
-   - **Clue:** Copy [**Snippet 6.A** in `code-snippets.md`](./code-snippets.md#snippet-6a-focusable-error-summary-with-anchor-links-to-fields).
-3. **Add Inline Field Error Spans (`Snippet 6.B`):**
+   - **Clue:** Copy [**Snippet 7.A** in `code-snippets.md`](./code-snippets.md#snippet-7a-focusable-error-summary-with-anchor-links-to-fields).
+3. **Add Inline Field Error Spans (`Snippet 7.B`):**
    - Ensure every field has `<span asp-validation-for="..." class="text-danger"></span>`.
-   - For an extra accessibility boost, see [**Snippet 6.B**](./code-snippets.md#snippet-6b-inline-error-message-with-aria-invalid-and-aria-describedby) to see how `aria-invalid="true"` and `aria-describedby` connect the error message to the input.
+   - For an extra accessibility boost, see [**Snippet 7.B**](./code-snippets.md#snippet-7b-inline-error-message-with-aria-invalid-and-aria-describedby) to see how `aria-invalid="true"` and `aria-describedby` connect the error message to the input.
 
 ---
 
-## Part 7 – Client-Side Validation (Native HTML5 Constraints)
+## Part 8 – Client-Side Validation (Native HTML5 Constraints)
 
-**Goal:** **Provide instant, zero-latency feedback in the browser before a network round-trip occurs, using lightweight native web standards.** Adding HTML5 constraint validation attributes (`required`, `maxlength`, `type="email"`, `type="date"`) allows the browser to catch missing required fields or malformed email addresses the moment the user attempts to submit—saving time and preserving scroll position—without requiring external JavaScript or jQuery validation libraries, while keeping server-side validation (Parts 5 & 6) as the authoritative check.
+**Goal:** **Provide instant, zero-latency feedback in the browser before a network round-trip occurs, using lightweight native web standards.** Adding HTML5 constraint validation attributes (`required`, `maxlength`, `type="email"`, `type="date"`) allows the browser to catch missing required fields or malformed email addresses the moment the user attempts to submit—saving time and preserving scroll position—without requiring external JavaScript or jQuery validation libraries, while keeping server-side validation (Parts 6 & 7) as the authoritative check.
 
 ### Step-by-Step Instructions
 
-1. Add native HTML5 validation attributes (`required`, `maxlength`, `type="email"`, `type="date"`) directly to the form controls in `Create.cshtml` matching the rules in `CreatePhdApplicationViewModel` (see [**Snippet 7.A** in `code-snippets.md`](./code-snippets.md#snippet-7a-adding-html5-validation-attributes-in-createcshtml)).
+1. Add native HTML5 validation attributes (`required`, `maxlength`, `type="email"`, `type="date"`) directly to the form controls in `Create.cshtml` matching the rules in `CreatePhdApplicationViewModel` (see [**Snippet 8.A** in `code-snippets.md`](./code-snippets.md#snippet-8a-adding-html5-validation-attributes-in-createcshtml)).
 2. Leave `required` off the optional `ResearchSummary` and `ProposedSupervisorStaffNumber` controls.
-3. No jQuery or JavaScript validation libraries are needed—the browser enforces HTML constraints natively, while `formnovalidate` on the draft button (Part 8) allows saving partial drafts.
+3. No jQuery or JavaScript validation libraries are needed—the browser enforces HTML constraints natively.
 
 ---
 
-## Part 8 (Optional Stretch Goal) – Split the Form into Sections with "Save and Return Later"
+## Part 9 – Accessible Table & Status Filtering on `Index.cshtml`
 
-> [!TIP]
-> **Optional Stretch Goal:** Complete **Part 9** (`EditStatus.cshtml`) first if you are short on time, then return here to implement multi-step section panels and draft saving.
+**Goal:** **Support fast visual scanning, status filtering, and unambiguous screen-reader link navigation across data tables.** As the number of PhD applications grows, staff need a simple filter control to narrow records by status, while screen-reader users navigating via a list of links or table cells need explicit table semantics (`<caption>`, `<th scope="col">`) and row-specific link context so they do not hear dozens of identical, indistinguishable `"Details"` and `"Edit status"` links (**WCAG 1.3.1 Info and Relationships** & **2.4.4 Link Purpose in Context**).
 
-**Goal:** **Reduce cognitive overload on long forms through progressive disclosure ("chunking") and protect users' work across multiple sessions.** Writing a PhD research proposal takes time, and applicants often need to gather funding details or refine their 2,000-character summary before submitting. Splitting the 4 logical sections into navigable step panels (`data-step-panel` with `aria-current="step"`) lets users focus on one manageable group of questions at a time while degrading gracefully if JavaScript is unavailable, and providing a **"Save as draft and return later"** button (`formnovalidate`) prevents frustrating data loss when users are interrupted (**WCAG 2.2.6 Timeouts** / task continuity).
+### Step-by-Step Instructions
 
-### Step-by-Step Instructions (Simplified Zero-Migration Path)
+Open `Views/PhdApplications/Index.cshtml` at the `TODO (Lab Part 9)` comment and apply [**Snippet 9.A** in `code-snippets.md`](./code-snippets.md#snippet-9a-accessible-table-with-caption-scopecol-filter-and-context-links):
 
-1. **Add `Draft` to `ApplicationStatus.cs` (`Snippet 8.A`):**
-   - Open `Modules/PhdApplications/Models/ApplicationStatus.cs` and add `Draft` at the top of the enum.
-   - **Heavy Hint:** Because `Status` is stored as a `TEXT` string in SQLite and we can default blank draft strings to `string.Empty`, **you don't even need to run a database migration** if you use [**Snippet 8.D**](./code-snippets.md#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later)! *(If you prefer making the database columns nullable, see [**Snippet 8.B**](./code-snippets.md#snippet-8b-update-studentmanagementdbcontextcs-configurephdapplications).)*
-
-2. **Add `SaveDraftApplicationAsync` to `PhdApplicationService.cs` (`Snippet 8.C`):**
-   - Open `Modules/PhdApplications/Services/PhdApplicationService.cs` at the `TODO (Lab Part 8)` comment and paste `SaveDraftApplicationAsync` from [**Snippet 8.C** in `code-snippets.md`](./code-snippets.md#snippet-8c-add-draft-save--final-submit-methods-to-phdapplicationservicecs).
-
-3. **Add the "Save as draft and return later" Button (`Snippet 8.D`):**
-   - In `Create.cshtml`, replace the submit button with the two buttons in [**Snippet 8.D**](./code-snippets.md#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later):
-     - `<button type="submit" name="command" value="submit" class="btn btn-primary">Submit application</button>`
-     - `<button type="submit" name="command" value="draft" formnovalidate class="btn btn-outline-secondary">Save as draft and return later</button>`
-   - Update `[HttpPost] Create` in `PhdApplicationsController.cs` to accept `string command = "submit"` and call `SaveDraftApplicationAsync` when `command == "draft"` (see [**Snippet 8.D**](./code-snippets.md#snippet-8d-dual-submit-buttons-submit-vs-save-and-return-later)).
-
-4. **Split `Create.cshtml` into 4 Navigable Step Panels (`Snippet 8.E`):**
-   - Wrap each of the 4 `<h2>` sections from Part 4 in `<div class="app-step" data-step-panel="1"> ... </div>` (for steps `1`, `2`, `3`, and `4`).
-   - Add the step navigation pills and short progressive-enhancement script from [**Snippet 8.E** in `code-snippets.md`](./code-snippets.md#snippet-8e-optional-stretch-goal-multi-step-wizard-tabs--sections-with-fieldset-panels).
-   - **Why this works so well:** With JavaScript enabled, users see one clean section at a time with `aria-current="step"` on the active step. If JavaScript is disabled, all 4 sections remain visible on the page and submit normally!
+1. **Add a Status Filter (`<form method="get">`):**
+   - Add a `<form method="get" asp-action="Index">` above the table with a `<label for="statusFilter">` and `<select id="statusFilter" name="statusFilter">` so users can filter applications by status (the controller's `Index(ApplicationStatus? statusFilter)` parameter is already wired up!).
+2. **Add Table Semantics (`<caption>` & `scope="col"`):**
+   - Add `<caption class="visually-hidden">List of PhD applications</caption>` inside `<table>` so screen readers announce the purpose of the table when a user enters it.
+   - Add `scope="col"` on every `<th>` header cell so assistive technologies associate each data cell with its column header.
+3. **Add Visually Hidden Row Context to Action Links (WCAG 2.4.4):**
+   - Append `<span class="visually-hidden"> for @application.ApplicationReference (@application.FullName)</span>` inside both the `Details` and `Edit status` anchor tags so screen-reader users navigating via a list of links hear `"Details for PHD-2026-001 (Alice Smith)"` instead of generic `"Details"`.
+   - **Clue:** Copy [**Snippet 9.A** in `code-snippets.md`](./code-snippets.md#snippet-9a-accessible-table-with-caption-scopecol-filter-and-context-links).
 
 ---
 
-## Part 9 – Improve the `EditStatus` Form (Admissions Decisions)
+## Part 10 (Optional) – Improve the `EditStatus` Form (Admissions Decisions)
 
 **Goal:** **Embed domain business rules directly into the interface so staff can only select valid workflow transitions (error prevention over error reporting).** In the starter form, an Admissions Tutor must type a raw status name into a text box and can easily type a misformatted string (`"Offer made"`) or attempt an illegal state transition (such as changing a finalized `Rejected` application back to `OfferMade`). By querying `GetAllowedTransitions(application.Status)` and presenting radio buttons *only* for the valid next states—or replacing the form with an informational lock message (`role="status"`) when the application has reached a final state—the UI guides staff through the workflow and makes invalid transitions impossible (**WCAG 3.3.4 Error Prevention**).
 
 ### Step-by-Step Instructions
 
 1. **Pass Allowed Transitions & Set `TempData` Confirmation in the Controller:**
-   - Open `PhdApplicationsController.cs` and find `TODO (Lab Part 9)` in `EditStatus`.
+   - Open `PhdApplicationsController.cs` and find `TODO (Lab Part 10 - Optional)` in `EditStatus`.
    - `PhdApplicationService` already has a `GetAllowedTransitions(application.Status)` helper ready for you! Call it and store the result in `ViewBag.AllowedTransitions` in both `[HttpGet] EditStatus` and `[HttpPost] EditStatus` (when returning the view on error).
    - In `[HttpPost] EditStatus`, when `outcome == ApplicationOutcome.Updated`, set `TempData["SuccessMessage"]` before redirecting to `Details` so the banner you added in Part 2 confirms the decision change:
      ```csharp
@@ -326,19 +342,7 @@ Open `Views/PhdApplications/Create.cshtml` and work through the `TODO (Lab Part 
    - Show the current status clearly as a badge above the form.
    - If `allowed.Count == 0` (meaning the application is already `Rejected`, `Withdrawn`, or `Enrolled`), show an informational alert explaining that the decision is final and cannot be changed.
    - Otherwise, render a `<fieldset>` with radio buttons for each status in `ViewBag.AllowedTransitions`.
-   - **Clue:** Copy [**Snippet 9.A** in `code-snippets.md`](./code-snippets.md#snippet-9a-controller--view-for-allowed-status-transitions).
-
----
-
-## Part 10 – Optional Bonus: Accessible Table & Filtering on `Index.cshtml`
-
-**Goal:** **Support fast visual scanning, status filtering, and unambiguous screen-reader link navigation across data tables.** As the number of PhD applications grows, staff need a simple filter control to narrow records by status, while screen-reader users navigating via a list of links need row-specific context so they do not hear dozens of identical, indistinguishable `"Details"` and `"Edit status"` links (**WCAG 1.3.1 Info and Relationships** & **2.4.4 Link Purpose in Context**).
-
-If you finish early, open `Views/PhdApplications/Index.cshtml` and apply [**Snippet 10.A** in `code-snippets.md`](./code-snippets.md#snippet-10a-accessible-table-with-caption-scopecol-filter-and-context-links):
-
-1. Add a `<form method="get">` with a `<select name="statusFilter">` so users can filter applications by status (the controller's `Index(ApplicationStatus? statusFilter)` parameter is already wired up!).
-2. Add `<caption class="visually-hidden">List of PhD applications</caption>` inside `<table>` and `scope="col"` on every `<th>`.
-3. Add visually hidden context to the row action links (`Details<span class="visually-hidden"> for @application.ApplicationReference</span>`) so screen-reader users navigating by links don't hear dozens of identical "Details" links (WCAG 2.4.4 Link Purpose).
+   - **Clue:** Copy [**Snippet 10.A** in `code-snippets.md`](./code-snippets.md#snippet-10a-controller--view-for-allowed-status-transitions).
 
 ---
 

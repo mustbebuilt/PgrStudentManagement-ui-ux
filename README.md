@@ -123,20 +123,20 @@ dotnet test
 
 ## Lab Resources: UI / UX and Accessibility
 
-This project includes a two-part hands-on lab sequence focused on improving form usability, accessibility (WCAG 2.2), and multi-step workflows in ASP.NET Core MVC, followed by branch-vs-branch usability and accessibility evaluation:
+This project includes a two-part hands-on lab sequence focused on improving form and data-table usability and accessibility (WCAG 2.2) in ASP.NET Core MVC, followed by branch-vs-branch usability and accessibility evaluation:
 
 - **Lab 1 — UI/UX & Accessibility Implementation**: [`LabResources/lab1-instructions.md`](./LabResources/lab1-instructions.md)
   - **Branch Setup**: Creating a dedicated `ui-ux-improvements` Git branch so the `main` branch remains untouched as a baseline for testing.
-  - **Part 0**: Usability and accessibility audit of the starter forms.
+  - **Part 0**: Usability and accessibility audit of the starter forms and table.
   - **Part 1 (Quick Wins)**: Fixing non-WCAG-compliant button colour contrast (`2.12:1` -> `8.86:1`, WCAG 1.4.3) via `:root` CSS variables in `wwwroot/css/site.css` and replacing `<span>` prompts with semantic `<label asp-for="...">` tags (WCAG 1.3.1 & 4.1.2).
   - **Part 2**: Minimising user input to prevent errors by decoupling forms from entities using View Models, auto-generating system fields, and providing post-redirect user feedback via `TempData` and `role="status"` (WCAG 4.1.3).
   - **Part 3**: Selecting appropriate HTML5 input types (dates, emails, radios, selects).
-  - **Part 4**: Accessible human-readable display names, hint text (`aria-describedby`), grouping (`<fieldset>`/`<legend>`), and live character counts.
-  - **Part 5 & 6**: Accessible server-side error validation (error summary, inline messages, focus management).
-  - **Part 7**: Native HTML5 client-side validation (`required`, `maxlength`, `type="email"`, `type="date"`).
-  - **Part 8 (Optional Stretch Goal)**: Breaking long forms into a multi-step task list with a **Save and Return Later** draft feature.
-  - **Part 9**: Progressive disclosure and error prevention on status decision forms (`EditStatus.cshtml`).
-  - **Part 10 (Optional Bonus)**: Accessible table semantics (`<caption>`, `scope="col"`), filtering, and screen-reader link context (`Index.cshtml`).
+  - **Part 4**: Structuring form layout, visual section grouping (`.form-section`), responsive paired fields (`.form-grid-2`), and proportionate input widths (`.input-width-sm`, `.input-width-md`).
+  - **Part 5**: Accessible human-readable display names, hint text (`aria-describedby`), and live character counts (`aria-live="polite"`).
+  - **Part 6 & 7**: Server-side validation rules and accessible error presentation (error summary, inline messages, focus management).
+  - **Part 8**: Native HTML5 client-side validation (`required`, `maxlength`, `type="email"`, `type="date"`).
+  - **Part 9**: Accessible table semantics (`<caption>`, `scope="col"`), status filtering, and screen-reader link context (`Index.cshtml`).
+  - **Part 10 (Optional)**: Progressive disclosure and error prevention on status decision forms (`EditStatus.cshtml`).
 - **Lab 2 — Branch Comparison Usability & Accessibility Testing (`main` vs. `ui-ux-improvements`)**: [`LabResources/lab2-instructions.md`](./LabResources/lab2-instructions.md)
   - Testing the untouched **`main` branch** against the **`ui-ux-improvements` branch** (either by switching branches with `git switch` or running both concurrently via `git worktree`).
   - **Part 1**: 5-minute Peer Guerrilla Usability Testing with structured task metrics.
@@ -145,7 +145,7 @@ This project includes a two-part hands-on lab sequence focused on improving form
   - **Part 4**: Automated usability and WCAG 2.2 AA testing with **Playwright** and **axe-core** (`@playwright/test` + `@axe-core/playwright` and .NET xUnit `Microsoft.Playwright` + `Deque.AxeCore.Playwright`).
   - **Part 5**: Branch comparison scorecard and reflection questions.
 - **Code Snippets & Heavy Hints Companion**: [`LabResources/code-snippets.md`](./LabResources/code-snippets.md)
-  - Concrete C# and Razor implementations for `PhdApplicationsController`, `PhdApplication` drafts, `PhdApplicationService` transition checks, and `StudentManagementDbContext` fluent configuration.
+  - Concrete C# and Razor implementations for `CreatePhdApplicationViewModel`, `PhdApplicationsController`, `Create.cshtml`, `Details.cshtml`, `Index.cshtml`, and `EditStatus.cshtml`.
 
 ---
 

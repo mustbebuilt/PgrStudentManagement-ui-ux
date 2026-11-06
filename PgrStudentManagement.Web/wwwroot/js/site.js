@@ -69,69 +69,10 @@
         });
     }
 
-    /**
-     * Initializes progressive-enhancement multi-step form panels ([data-step-panel] and [data-step]).
-     * Automatically reveals the panel containing an invalid field when native HTML5 validation runs.
-     */
-    function initStepWizard() {
-        const panels = document.querySelectorAll('[data-step-panel]');
-        const buttons = document.querySelectorAll('[data-step]');
-        if (panels.length === 0 || buttons.length === 0) {
-            return;
-        }
-
-        function showStep(stepNumber) {
-            const targetStep = String(stepNumber);
-
-            panels.forEach((panel) => {
-                panel.hidden = panel.getAttribute('data-step-panel') !== targetStep;
-            });
-
-            buttons.forEach((button) => {
-                const isActive = button.getAttribute('data-step') === targetStep;
-                button.classList.toggle('active', isActive);
-                if (isActive) {
-                    button.setAttribute('aria-current', 'step');
-                } else {
-                    button.removeAttribute('aria-current');
-                }
-            });
-        }
-
-        buttons.forEach((button) => {
-            button.addEventListener('click', () => {
-                showStep(button.getAttribute('data-step'));
-            });
-        });
-
-        // When native HTML5 validation flags a control inside a hidden step panel,
-        // reveal that step panel immediately so the browser can focus the control.
-        const form = panels[0].closest('form');
-        if (form) {
-            form.addEventListener(
-                'invalid',
-                (event) => {
-                    const target = event.target;
-                    if (!(target instanceof HTMLElement)) {
-                        return;
-                    }
-                    const panel = target.closest('[data-step-panel]');
-                    if (panel && panel.hidden) {
-                        showStep(panel.getAttribute('data-step-panel'));
-                    }
-                },
-                true
-            );
-        }
-
-        showStep(1);
-    }
-
     function init() {
         initNavbarToggle();
         initErrorSummaryFocus();
         initCharacterCounters();
-        initStepWizard();
     }
 
     if (document.readyState === 'loading') {

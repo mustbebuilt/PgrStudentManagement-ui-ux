@@ -15,22 +15,25 @@
           * Task 2: Replace every <span class="form-label"> with <label asp-for="..." class="form-label"></label> (Snippet 1.B)
       - Part 2: Change @model to CreatePhdApplicationViewModel & remove system fields (Snippet 2.A & 2.B)
       - Part 3: Replace plain text boxes with proper semantic controls (Snippets 3.A–3.D)
-      - Part 4: Add human-readable display names, hints (aria-describedby),
-                <fieldset>/<legend>, and live character counter (Snippets 4.A & 4.B)
-      - Part 6: Add accessible error summary + inline errors (Snippets 6.A & 6.B)
-      - Part 7: Add HTML client-side validation attributes (Snippet 7.A)
-      - Part 8 (Optional Stretch Goal): Split into sections & add "Save as draft" button (Snippets 8.A–8.E)
+      - Part 4: Improve form layout, section grouping (.form-section, .form-grid-2),
+                and proportionate input widths (.input-width-sm, .input-width-md) (Snippets 4.A & 4.B)
+      - Part 5: Add human-readable display names, hints (aria-describedby),
+                and live character counter (Snippets 5.A & 5.B)
+      - Part 7: Add accessible error summary + inline errors (Snippets 7.A & 7.B)
+      - Part 8: Add HTML client-side validation attributes (Snippet 8.A)
     ===========================================================================
 *@
 
 @{
-    // TODO (Lab Part 6): Prefix title with "Error: " when !ViewData.ModelState.IsValid (see Snippet 6.A)
+    // TODO (Lab Part 7): Prefix title with "Error: " when !ViewData.ModelState.IsValid (see Snippet 7.A)
     ViewData["Title"] = "Create PhD Application";
 }
 
 <h1>Create PhD Application</h1>
 
-@* TODO (Lab Part 6): Add the accessible error summary box here (see Snippet 6.A in code-snippets.md) *@
+@* TODO (Lab Part 4): Wrap the form in <div class="form-container"> and group related fields into
+   four <section class="form-section"> cards (see Snippet 4.B in code-snippets.md). *@
+@* TODO (Lab Part 7): Add the accessible error summary box here (see Snippet 7.A in code-snippets.md) *@
 
 <form asp-action="Create" method="post">
 
@@ -46,8 +49,8 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 2): Replace each <span class="form-label"> with <label asp-for="..." class="form-label"></label> (Snippet 1.B).
-       TODO (Lab Part 3 & Part 4): Group FirstName, LastName, and EmailAddress under an <h2>1. About you</h2> heading.
-       Add autocomplete="given-name" / "family-name" and change EmailAddress to type="email" (see Snippet 3.A). *@
+       TODO (Lab Part 3 & Part 4): Replace EmailAddress with type="email" (Snippet 3.A), wrap Section 1 in
+       <section class="form-section">, and pair FirstName/LastName side-by-side in <div class="form-grid-2"> (Snippet 4.B). *@
     <div class="mb-3">
         <span class="form-label">FirstName</span>
         <input type="text"
@@ -76,7 +79,7 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 2): Replace <span class="form-label"> with <label asp-for="ProgrammeCode" class="form-label"></label>.
-       TODO (Lab Part 3): Replace ProgrammeCode text input with a <select> dropdown of programmes (PHD-COMP, PHD-DESIGN, etc. — see Snippet 3.B) *@
+       TODO (Lab Part 3 & Part 4): Replace ProgrammeCode text input with a <select> dropdown (Snippet 3.B) and size it with .input-width-md (Snippet 4.B) *@
     <div class="mb-3">
         <span class="form-label">ProgrammeCode</span>
         <input type="text"
@@ -86,7 +89,7 @@
                class="form-control" />
     </div>
 
-    @* TODO (Lab Part 3 & Part 4): Replace ModeOfStudy text input with radio buttons ("Full-time", "Part-time")
+    @* TODO (Lab Part 3): Replace ModeOfStudy text input with radio buttons ("Full-time", "Part-time")
        wrapped in a <fieldset> and <legend> (see Snippet 3.B in code-snippets.md). *@
     <div class="mb-3">
         <span class="form-label">ModeOfStudy</span>
@@ -98,7 +101,7 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 2): Replace <span class="form-label"> with <label asp-for="ProposedStartDate" class="form-label"></label>.
-       TODO (Lab Part 3): Replace ProposedStartDate with <input type="date"> (see Snippet 3.B) *@
+       TODO (Lab Part 3 & Part 4): Replace ProposedStartDate with <input type="date"> (Snippet 3.B) and size it with .input-width-sm (Snippet 4.B) *@
     <div class="mb-3">
         <span class="form-label">ProposedStartDate</span>
         <input type="text"
@@ -119,8 +122,8 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 2): Replace <span class="form-label"> with <label asp-for="ResearchSummary" class="form-label"></label>.
-       TODO (Lab Part 3 & Part 4): Replace ResearchSummary with a <textarea rows="6">, a hint linked via
-       aria-describedby, and a live character counter (see Snippet 4.A & 4.B in code-snippets.md). *@
+       TODO (Lab Part 5): Replace ResearchSummary with a <textarea rows="6">, a hint linked via
+       aria-describedby, and a live character counter (see Snippet 5.A & 5.B in code-snippets.md). *@
     <div class="mb-3">
         <span class="form-label">ResearchSummary</span>
         <input type="text"
@@ -142,8 +145,8 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 2): Replace <span class="form-label"> with <label asp-for="ProposedSupervisorStaffNumber" class="form-label"></label>.
-       TODO (Lab Part 3 & Part 4): Replace ProposedSupervisorStaffNumber text box with a <select> showing
-       supervisor names from ViewBag.Supervisors, and mark the label "(optional)" (see Snippet 3.D). *@
+       TODO (Lab Part 3, Part 4 & Part 5): Replace ProposedSupervisorStaffNumber text box with a <select> showing
+       supervisor names from ViewBag.Supervisors, size with .input-width-md, and mark the label "(optional)" (see Snippet 3.D & 4.B). *@
     <div class="mb-3">
         <span class="form-label">ProposedSupervisorStaffNumber</span>
         <input type="text"
@@ -164,7 +167,7 @@
     </div>
 
     @* TODO (Lab Part 1 - Task 1): Fix the non-WCAG-compliant colour contrast on .btn-primary in wwwroot/css/site.css (Snippet 1.A).
-       TODO (Lab Part 8 - Optional Stretch Goal): Add a second submit button (`name="command" value="draft"`) for "Save and return later" (Snippet 8.D). *@
+       TODO (Lab Part 4): Wrap the action buttons in <div class="form-actions"> (Snippet 4.B). *@
     <button type="submit"
             class="btn btn-primary">
         Create
@@ -176,4 +179,4 @@
     </a>
 </form>
 
-@* TODO (Lab Part 7): Add native HTML validation attributes (required, maxlength, type="email", type="date") to form controls (see Snippet 7.A) *@
+@* TODO (Lab Part 8): Add native HTML validation attributes (required, maxlength, type="email", type="date") to form controls (see Snippet 8.A) *@

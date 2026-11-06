@@ -2,7 +2,7 @@
 
 ## Learning Objectives
 
-In [lab1-instructions.md](./lab1-instructions.md), you created a new Git branch (`ui-ux-improvements`) and redesigned the **PhD Applications** forms (`Create.cshtml` and `EditStatus.cshtml`) to improve user experience, semantic HTML structure, validation recovery, and WCAG 2.2 AA accessibility.
+In [lab1-instructions.md](./lab1-instructions.md), you created a new Git branch (`ui-ux-improvements`) and redesigned the **PhD Applications** views (`Create.cshtml`, `Details.cshtml`, `Index.cshtml`, and optionally `EditStatus.cshtml`) to improve user experience, semantic HTML structure, validation recovery, and WCAG 2.2 AA accessibility.
 
 In this second lab, you will **measure and verify** the impact of your improvements by testing the untouched **`main` branch** against your **`ui-ux-improvements` branch** using four complementary testing methods:
 
@@ -65,9 +65,9 @@ Automated tools can verify technical accessibility rules, but they cannot tell y
 
 > *"Imagine you are **Alex Morgan** (`alex.morgan@example.ac.uk`). You want to apply for a **Part-time** PhD in **Computing (`PHD-COMP`)** starting on **1 October 2027**, funded by a **University studentship**, supervised by **Robin Carter**, with the working thesis title **'Automated Accessibility Testing in Higher Education Portals'** and a short research summary.*
 >
-> *1. (If you completed the Part 8 stretch goal) Start filling out the application and save a draft after entering your personal details.*
-> *2. Complete and submit the full application.*
-> *3. Finally, act as an Admissions Tutor and update your application status to **Under Review**."*
+> *1. Complete and submit the application, then note your application reference number.*
+> *2. Return to the PhD Applications list (`/PhdApplications`) and filter the list to show only **Submitted** applications.*
+> *3. (Optional — if you completed Part 10) Act as an Admissions Tutor and update your application status to **Under Review**."*
 
 ### Record Your Observations
 
@@ -77,7 +77,7 @@ Automated tools can verify technical accessibility rules, but they cannot tell y
 | **Number of times user asked "What do I put here?"** | | |
 | **Number of failed form submissions** | | |
 | **Did the user have to leave the page to look up an ID or code?** | | |
-| **Was the user able to save partial progress and return? *(Optional Part 8)*** | | |
+| **Did the user receive a confirmation banner and filter the applications table easily?** | | |
 | **Subjective Cognitive Load (1 = effortless, 5 = frustrating)** | | |
 
 ---
@@ -225,23 +225,11 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
   test('2. Semantic Controls: Constrained choices use radios and dropdowns instead of textboxes', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
-    // Navigate to Step 2 if using the progressive multi-step form
-    const step2Btn = page.getByRole('button', { name: /2\. Programme/i });
-    if (await step2Btn.isVisible()) {
-      await step2Btn.click();
-    }
-
     // MAIN FAILS: ModeOfStudy and ProposedSupervisorStaffNumber are generic role="textbox" inputs
     // UI-UX-IMPROVEMENTS PASSES: Mode of study is a fieldset radio group and Supervisor is a combobox
     const studyModeGroup = page.getByRole('group', { name: /Mode of study/i });
     await expect(studyModeGroup).toBeVisible();
     await expect(studyModeGroup.getByRole('radio')).toHaveCount(2);
-
-    // Navigate to Step 4 if using the progressive multi-step form
-    const step4Btn = page.getByRole('button', { name: /4\. Funding/i });
-    if (await step4Btn.isVisible()) {
-      await step4Btn.click();
-    }
 
     const supervisorSelect = page.getByRole('combobox', { name: /Proposed main supervisor/i });
     await expect(supervisorSelect).toBeVisible();
@@ -284,36 +272,20 @@ test.describe('PhD Application Form — UI/UX & Accessibility Suite', () => {
     }
   });
 
-  test('4. Live Feedback & Task-Saving: Character counter updates (and Save Draft works if Part 8 stretch goal is implemented)', async ({ page }) => {
+  test('4. Live Character Counter & Accessible Applications Table (Part 5 & Part 9)', async ({ page }) => {
     await page.goto('/PhdApplications/Create');
 
-    // Navigate to Step 3 if using the optional multi-step panels
-    const step3Btn = page.getByRole('button', { name: /3\. Proposal/i });
-    if (await step3Btn.isVisible()) {
-      await step3Btn.click();
-    }
-
-    // Check live character counter on Research Summary
+    // Check live character counter on Research Summary (Part 5)
     const summaryField = page.getByLabel(/Research summary/i);
     await summaryField.fill('Exploring automated accessibility testing in academic portals.');
     const counter = page.locator('#ResearchSummary-count');
     await expect(counter).toContainText(/remaining/i);
 
-    // If the optional Part 8 "Save as draft" stretch goal was implemented, verify draft saving
-    const saveDraftBtn = page.getByRole('button', { name: /Save as draft/i });
-    if (await saveDraftBtn.isVisible()) {
-      const step1Btn = page.getByRole('button', { name: /1\. About you/i });
-      if (await step1Btn.isVisible()) {
-        await step1Btn.click();
-      }
-
-      await page.getByLabel('First name').fill('Alex');
-      await page.getByLabel('Last name').fill('Morgan');
-      await page.getByLabel('Email address').fill('alex.morgan@example.ac.uk');
-
-      await saveDraftBtn.click();
-      await expect(page).toHaveURL(/\/PhdApplications\/(Details|Index)/);
-    }
+    // Check accessible table semantics, status filter, and contextual action links on Index (Part 9)
+    await page.goto('/PhdApplications');
+    await expect(page.getByLabel('Filter by status')).toBeVisible();
+    await expect(page.getByRole('table', { name: /List of PhD applications/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Details for PHD-/i }).first()).toBeVisible();
   });
 
   test('5. Automated WCAG 2.2 AA Audit (axe-core)', async ({ page }) => {

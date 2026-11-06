@@ -65,16 +65,14 @@ public sealed class PhdApplicationsController : Controller
         });
     }
 
-    // TODO (Lab Part 2, Part 5 & Optional Part 8):
+    // TODO (Lab Part 2 & Part 6):
     // 1. Add [ValidateAntiForgeryToken].
     // 2. Bind to CreatePhdApplicationViewModel instead of PhdApplication.
     // 3. Auto-generate ApplicationReference using
     //    await _phdApplicationService.GenerateNextApplicationReferenceAsync(cancellationToken).
     // 4. Set TempData["SuccessMessage"] before RedirectToAction(nameof(Details), ...) so the user
     //    sees confirmation feedback on the Details page (Post-Redirect-Get pattern).
-    // 5. (Optional Stretch Goal - Part 8) Accept a `string command = "submit"` parameter to support
-    //    "Save as draft" vs "Submit application".
-    // See LabResources/code-snippets.md (Snippet 2.B, Snippet 2.C, and Snippet 8.D) for the complete code.
+    // See LabResources/code-snippets.md (Snippet 2.B and Snippet 2.C) for the complete code.
     [HttpPost]
     public async Task<IActionResult> Create(
         PhdApplication application,
@@ -125,10 +123,10 @@ public sealed class PhdApplicationsController : Controller
         }
     }
 
-    // TODO (Lab Part 9):
+    // TODO (Lab Part 10 - Optional):
     // Pass allowed transitions to the view using:
     // ViewBag.AllowedTransitions = _phdApplicationService.GetAllowedTransitions(application.Status);
-    // See LabResources/code-snippets.md (Snippet 9.A).
+    // See LabResources/code-snippets.md (Snippet 10.A).
     [HttpGet]
     public async Task<IActionResult> EditStatus(
         string applicationReference,
@@ -190,8 +188,8 @@ public sealed class PhdApplicationsController : Controller
 
         if (outcome == ApplicationOutcome.Updated)
         {
-            // TODO (Lab Part 9): Set TempData["SuccessMessage"] before redirecting so the Details
-            // page confirms that the status was updated (see Snippet 9.A in LabResources/code-snippets.md).
+            // TODO (Lab Part 10 - Optional): Set TempData["SuccessMessage"] before redirecting so the Details
+            // page confirms that the status was updated (see Snippet 10.A in LabResources/code-snippets.md).
             return RedirectToAction(
                 nameof(Details),
                 new { applicationReference });

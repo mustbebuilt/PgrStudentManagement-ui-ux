@@ -239,10 +239,6 @@ public class PhdApplicationService
         };
     }
 
-    // TODO (Lab Part 8 - Optional Stretch Goal): Add SaveDraftApplicationAsync
-    // here if implementing Save & Return Later.
-    // See LabResources/code-snippets.md (Snippet 8.C) for the code snippet.
-
     private static bool IsValidStatusTransition(
         ApplicationStatus currentStatus,
         ApplicationStatus newStatus)
